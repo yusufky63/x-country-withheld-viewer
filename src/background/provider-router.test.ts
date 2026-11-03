@@ -47,7 +47,7 @@ describe("ProviderRouter", () => {
 
   beforeEach(() => {
     clock = 1_000_000;
-    settings = { enabled: true, useXmdFallback: true, glowBorder: true };
+    settings = { enabled: true, useXmdFallback: true, glowBorder: true, language: "tr" };
     sleep.mockClear();
   });
 

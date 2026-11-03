@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5
+
+- Show the extension in Turkish by default, with English available from the popup. The language applies at once.
+- Follow X's own language for the repost line on recovered timelines.
+
 ## 0.1.4
 
 - Scan the page in one pass, so long timelines stay smooth however many posts were recovered.

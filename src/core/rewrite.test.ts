@@ -310,6 +310,14 @@ describe("ResponseRewriter profiles", () => {
     expect(entries[0].content.itemContent.socialContext).toBeUndefined();
   });
 
+  it("writes the repost line in the language it is given", async () => {
+    const turkish = new ResponseRewriter(makeDeps({ repostLabel: (name) => `${name} yeniden gönderdi` }));
+    await turkish.rewrite(JSON.stringify(blockedUser), userCtx);
+    const parsed = JSON.parse((await turkish.rewrite("{}", timelineCtx)).text);
+    const entries = parsed.data.user.result.timeline.timeline.instructions[0].entries;
+    expect(entries[1].content.itemContent.socialContext.text).toBe("Sample yeniden gönderdi");
+  });
+
   it("adds to the entries X did return instead of replacing the structure", async () => {
     await rewriter.rewrite(JSON.stringify(blockedUser), userCtx);
     const existing = { data: { user: { result: { timeline: { timeline: { instructions: [{ type: "TimelineAddEntries", entries: [] }] } } } } } };

@@ -32,6 +32,9 @@ const fonts = {
   "dm-sans-400.woff2": "@fontsource/dm-sans/files/dm-sans-latin-400-normal.woff2",
   "dm-sans-500.woff2": "@fontsource/dm-sans/files/dm-sans-latin-500-normal.woff2",
   "jetbrains-mono-400.woff2": "@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2",
+  "dm-sans-ext-400.woff2": "@fontsource/dm-sans/files/dm-sans-latin-ext-400-normal.woff2",
+  "dm-sans-ext-500.woff2": "@fontsource/dm-sans/files/dm-sans-latin-ext-500-normal.woff2",
+  "jetbrains-mono-ext-400.woff2": "@fontsource/jetbrains-mono/files/jetbrains-mono-latin-ext-400-normal.woff2",
 };
 
 function copyStatic() {

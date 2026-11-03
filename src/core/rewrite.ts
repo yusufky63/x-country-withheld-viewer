@@ -9,6 +9,7 @@ import {
   findEntriesArray,
   focalSortIndex,
   hasConversationReplies,
+  type RepostLabel,
   type SyntheticCursor,
   type TimelineView,
   timelineViewOf,
@@ -24,6 +25,7 @@ export interface RewriteDeps {
   recoverProfile(user: { id: string; handle: string }): Promise<ProfileResult>;
   userPosts(request: { id: string; handle: string; cursor?: string; withReplies: boolean }): Promise<PostsPage>;
   conversation(request: { id: string; cursor?: string }): Promise<PostsPage>;
+  repostLabel?: RepostLabel;
 }
 
 export interface Marks {
@@ -262,6 +264,7 @@ export class ResponseRewriter {
         ...(user.country ? { country: user.country } : {}),
       },
       dialect,
+      this.#deps.repostLabel,
     );
     if (!existing) return userTimelinePayload(entries, dialect, user);
     // Only the source's cursor can page further, since X has nothing more to give here.
@@ -319,6 +322,7 @@ export class ResponseRewriter {
           ...(country ? { country } : {}),
         },
         dialect,
+        this.#deps.repostLabel,
       );
       return { text: JSON.stringify(userTimelinePayload(entries, dialect, { id, handle })), ...marks };
     }

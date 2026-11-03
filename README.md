@@ -23,6 +23,7 @@ X'in kendi arayüzünde normal bir gönderi gibi gösteren tarayıcı eklentisi.
 - **Gizlenen gönderileri yerinde açar.** Gönderi, yanıt ve alıntı olduğu yerde görünür. Ayrı bir kart ya da pencere yoktur.
 - **Gizlenen hesapları açar.** Profil normal görünür, gönderiler de sekmelerine dolar.
 - **Çizimi X'e bırakır.** Avatar, metin, fotoğraf, video ve butonlar X'in kendi bileşenleridir.
+- **Türkçe gelir.** Arayüz varsayılan olarak Türkçedir, istersen İngilizceye geçebilirsin.
 - **İki küçük işaret ekler.** Kurtarılan gönderinin kenarı hafifçe parlar, zaman damgasının yanında küçük bir göz durur. Gözün üzerine gelince ülke ve kaynak yazar.
 - **Kurulum dışında bir şey istemez.** VPN, ücretli API ya da ek hesap gerekmez.
 
@@ -63,7 +64,7 @@ Araç çubuğundaki simgeye tıklayınca açılır. Değişiklikler kaydedilir.
 <td width="260" valign="top">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/popup-koyu.png" />
-  <img src="docs/assets/popup-acik.png" width="240" alt="Eklentinin açılır penceresi: açma kapama, kaynaklar, görünüm ve oturum sayaçları." />
+  <img src="docs/assets/popup-acik.png" width="240" alt="Eklentinin açılır penceresi: açma kapama, kaynaklar, görünüm, dil ve oturum sayaçları." />
 </picture>
 </td>
 <td valign="top">
@@ -71,10 +72,11 @@ Araç çubuğundaki simgeye tıklayınca açılır. Değişiklikler kaydedilir.
 | Ayar | Ne yapar |
 | --- | --- |
 | Ana anahtar | Kapalıyken hiçbir kaynağa istek gitmez, X olduğu gibi kalır. |
-| x.md fallback | FxTwitter sonuç vermezse `x.md` de sorulur. |
-| Glowing border | Kenar parlamasını açar, kapatır. Göz işareti kalır. Hemen uygulanır. |
-| Clear recovered posts | Önbelleği ve oturum sayaçlarını temizler. |
-| Copy diagnostics | Sorun bildirmek için teknik özeti panoya kopyalar. |
+| x.md yedeği | FxTwitter sonuç vermezse `x.md` de sorulur. |
+| Parlayan kenarlık | Kenar parlamasını açar, kapatır. Göz işareti kalır. Hemen uygulanır. |
+| Dil | Türkçe ya da English. Varsayılan Türkçedir, tarayıcının diline bakılmaz. Hemen uygulanır. |
+| Kurtarılan gönderileri temizle | Önbelleği ve oturum sayaçlarını temizler. |
+| Tanı bilgisini kopyala | Sorun bildirmek için teknik özeti panoya kopyalar. |
 
 </td>
 </tr>
@@ -181,7 +183,7 @@ X içeriği kendisi çizdiği için görsel tasarım değişikliklerinde genelde
 | Oturum açık hesapların Relay istemcisine geçmesi | Gönderiler dışındaki sekmeler boş kalır | `src/core/timeline.ts` |
 | FxTwitter ya da x.md API'leri | Kurtarma durur | `src/providers/` |
 
-Bunların hiçbirinde X bozulmamalı, çünkü eşleşmeyen her şey X'in yanıtını olduğu gibi bırakır. Ne olduğunu görmek için açılır penceredeki **Copy diagnostics** düğmesini ya da konsoldaki `[X Withheld Viewer]` satırlarını kullanabilirsin.
+Bunların hiçbirinde X bozulmamalı, çünkü eşleşmeyen her şey X'in yanıtını olduğu gibi bırakır. Ne olduğunu görmek için açılır penceredeki **Tanı bilgisini kopyala** düğmesini ya da konsoldaki `[X Withheld Viewer]` satırlarını kullanabilirsin.
 
 ## Sık sorulan sorular
 
@@ -195,13 +197,16 @@ X'in gizlendi olarak işaretlediklerini ve oturumsuzken X'in boş döndürdükle
 Bu gönderinin başka bir kaynaktan geldiğini. Gözün üzerine gelince ülke ve kaynak yazar. Kurtarılan profilde göz, kullanıcı adının yanında durur.
 
 **Kenar parlamasını kaldırabilir miyim?**
-Evet. Açılır pencerede **Glowing border** anahtarını kapat. Hemen uygulanır, göz işareti kalır.
+Evet. Açılır pencerede **Parlayan kenarlık** anahtarını kapat. Hemen uygulanır, göz işareti kalır.
+
+**Eklenti İngilizce kullanılabilir mi?**
+Evet. Açılır pencerede **Dil** bölümünden English'i seç. Açılır pencere, göz işaretinin açıklaması ve uyarı notları hemen değişir. Geri kalan her şeyi X kendi dilinde çizer.
 
 **Eklentiyi kapatabilir miyim?**
 Evet, açılır penceredeki ana anahtardan. Kapalıyken hiçbir kaynağa istek gitmez.
 
 **Gizlenen gönderi ya da profil hâlâ açılmıyor, ne yapmalıyım?**
-Eklentiler sayfasında eklentiyi yeniden yükle, açılır pencerede sürümü kontrol et ve X sekmesini yenile. Konsolda aynı sürümle `[X Withheld Viewer] ... active` satırı görünmeli. Bu satır yoksa eklenti sayfada çalışmıyor demektir. Varsa açılır pencereden **Copy diagnostics** ile bilgiyi kopyalayıp sorun bildirirken ekle. Bu bilgide gönderi metni, çerez ya da istek başlığı yoktur.
+Eklentiler sayfasında eklentiyi yeniden yükle, açılır pencerede sürümü kontrol et ve X sekmesini yenile. Konsolda aynı sürümle `[X Withheld Viewer] ... active` satırı görünmeli. Bu satır yoksa eklenti sayfada çalışmıyor demektir. Varsa açılır pencereden **Tanı bilgisini kopyala** ile bilgiyi kopyalayıp sorun bildirirken ekle. Bu bilgide gönderi metni, çerez ya da istek başlığı yoktur.
 
 ## Geliştirme
 

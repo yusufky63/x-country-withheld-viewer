@@ -163,16 +163,21 @@ export interface FailedMark {
   message: string;
 }
 
+export type Language = "tr" | "en";
+
 export interface Settings {
   enabled: boolean;
   useXmdFallback: boolean;
   glowBorder: boolean;
+  language: Language;
 }
 
+// Turkish regardless of the browser's language, so this is a setting and not chrome.i18n.
 export const DEFAULT_SETTINGS: Settings = {
   enabled: true,
   useXmdFallback: true,
   glowBorder: true,
+  language: "tr",
 };
 
 export interface SessionStats {

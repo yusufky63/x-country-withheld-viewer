@@ -1,4 +1,5 @@
-import type { AppliedMark, FailedMark, ProfileMark, ProviderId, RecoveryStatus } from "../core/types";
+import { failureNote, markTitle, profileMarkTitle } from "../core/i18n";
+import type { AppliedMark, FailedMark, Language, ProfileMark } from "../core/types";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const MARK_CLASS = "xcwv-mark";
@@ -18,38 +19,6 @@ function trimOldest(entries: Map<string, unknown>): void {
     if (entries.size <= MAX_REMEMBERED) return;
     entries.delete(key);
   }
-}
-
-const SOURCE_NAMES: Record<ProviderId, string> = { fxtwitter: "FxTwitter", xmd: "x.md" };
-
-const FAILURE_NOTES: Partial<Record<RecoveryStatus, string>> = {
-  not_found: "Not found in alternative sources.",
-  deleted: "Alternative sources report this post as deleted.",
-  private: "This post is private, so it stays hidden.",
-  suspended: "Alternative sources report this account as suspended.",
-  rate_limited: "Alternative sources are rate limiting. Reload later to try again.",
-  provider_unavailable: "Alternative sources did not respond. Reload later to try again.",
-};
-
-/** X reports countries as ISO codes on profiles and as full names in tombstone text. */
-function placeName(country: string | undefined): string {
-  if (!country) return "your country";
-  if (!/^[A-Z]{2}$/.test(country)) return country;
-  try {
-    return new Intl.DisplayNames(["en"], { type: "region" }).of(country) ?? country;
-  } catch {
-    return country;
-  }
-}
-
-export function markTitle(mark: AppliedMark): string {
-  const source = SOURCE_NAMES[mark.source];
-  if (mark.kind === "missing") return `Not available on X here. Shown from ${source}.`;
-  return `Withheld in ${placeName(mark.country)}. Shown from ${source}.`;
-}
-
-export function profileMarkTitle(mark: ProfileMark): string {
-  return `Account withheld in ${placeName(mark.country)}. Shown from ${SOURCE_NAMES[mark.source]}.`;
 }
 
 /** Matches the post's own link, with or without the query X adds, but not `/photo/1` and the like. */
@@ -101,9 +70,20 @@ export class Marker {
   #notesTimer: ReturnType<typeof setTimeout> | null = null;
   #lastNotesAt = 0;
   #glow = true;
+  #language: Language;
 
-  constructor(doc: Document) {
+  constructor(doc: Document, language: Language = "tr") {
     this.#doc = doc;
+    this.#language = language;
+  }
+
+  /** Redraws what is on screen, so the setting needs no reload. */
+  setLanguage(language: Language): void {
+    if (language === this.#language) return;
+    this.#language = language;
+    for (const element of this.#doc.querySelectorAll(`.${MARK_CLASS}, .${NOTE_CLASS}`)) element.remove();
+    this.#lastNotesAt = 0;
+    this.scan();
   }
 
   /** Applies at once to posts already on screen, so the setting needs no reload. */
@@ -222,7 +202,7 @@ export class Marker {
       const container = article ?? anchor.parentElement;
       if (!container) continue;
       if (!container.querySelector(`.${MARK_CLASS}[data-xcwv-id="${mark.id}"]`)) {
-        anchor.after(this.#createMark(mark.id, markTitle(mark), anchor));
+        anchor.after(this.#createMark(mark.id, markTitle(mark, this.#language), anchor));
       }
       // Measuring forces layout, so it happens once per post rather than on every scan.
       if (article && this.#glow && !article.closest(`[${RECOVERED_ATTRIBUTE}="${mark.id}"]`)) {
@@ -242,7 +222,7 @@ export class Marker {
       const card = mark ? time.closest('[role="link"]') : null;
       if (!mark || !card || !(card.textContent ?? "").toLowerCase().includes(`@${mark.handle}`.toLowerCase())) continue;
       if (!card.querySelector(`.${MARK_CLASS}[data-xcwv-id="${mark.id}"]`)) {
-        time.after(this.#createMark(mark.id, markTitle(mark), time));
+        time.after(this.#createMark(mark.id, markTitle(mark, this.#language), time));
       }
       if (this.#glow) card.setAttribute(RECOVERED_ATTRIBUTE, mark.id);
     }
@@ -259,7 +239,7 @@ export class Marker {
     for (const span of main.querySelectorAll("span")) {
       if (span.closest("article") || span.childElementCount > 0) continue;
       if ((span.textContent ?? "").trim().toLowerCase() === key.toLowerCase()) {
-        span.after(this.#createMark(key, profileMarkTitle(profile), span));
+        span.after(this.#createMark(key, profileMarkTitle(profile, this.#language), span));
         return;
       }
     }
@@ -269,7 +249,7 @@ export class Marker {
     const root = this.#doc.querySelector("main") ?? this.#doc.body;
     const view = this.#doc.defaultView;
     if (!root || !view) return;
-    const failures = [...this.#failed.values()].filter((failure) => FAILURE_NOTES[failure.status]);
+    const failures = [...this.#failed.values()].filter((failure) => failureNote(failure.status, this.#language));
     if (failures.length === 0) return;
 
     const walker = this.#doc.createTreeWalker(root, view.NodeFilter.SHOW_TEXT);
@@ -289,7 +269,7 @@ export class Marker {
       const note = this.#doc.createElement("div");
       note.className = NOTE_CLASS;
       note.dataset.xcwvId = failure.id;
-      note.textContent = FAILURE_NOTES[failure.status] ?? "";
+      note.textContent = failureNote(failure.status, this.#language) ?? "";
       const color = view.getComputedStyle(element).color;
       if (color) note.style.color = color;
       block.after(note);

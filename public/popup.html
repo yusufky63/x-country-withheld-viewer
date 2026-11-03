@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="tr">
   <head>
     <meta charset="utf-8" />
     <meta name="color-scheme" content="light dark" />
@@ -10,22 +10,22 @@
     <header class="row head">
       <div>
         <h1>Withheld Viewer <span id="version" class="mono muted"></span></h1>
-        <p class="muted">Shows country-withheld posts on X like any other post.</p>
+        <p class="muted" data-i18n="tagline"></p>
       </div>
       <label class="switch">
-        <input id="enabled" type="checkbox" aria-label="Show withheld posts" />
+        <input id="enabled" type="checkbox" />
         <span aria-hidden="true"></span>
       </label>
     </header>
 
     <section>
-      <h2 class="label">Sources</h2>
+      <h2 class="label" data-i18n="sources"></h2>
       <div class="row item">
         <span>FxTwitter</span>
-        <span class="muted mono">primary</span>
+        <span class="muted mono" data-i18n="primary"></span>
       </div>
       <div class="row item">
-        <label for="xmd">x.md fallback</label>
+        <label for="xmd" data-i18n="xmd"></label>
         <label class="switch">
           <input id="xmd" type="checkbox" />
           <span aria-hidden="true"></span>
@@ -34,36 +34,40 @@
     </section>
 
     <section>
-      <h2 class="label">Display</h2>
+      <h2 class="label" data-i18n="display"></h2>
       <div class="row item">
-        <label for="glow">Glowing border</label>
+        <label for="glow" data-i18n="glow"></label>
         <label class="switch">
           <input id="glow" type="checkbox" />
           <span aria-hidden="true"></span>
         </label>
       </div>
+      <div class="row item">
+        <span id="language-label" data-i18n="language"></span>
+        <div class="segmented" role="radiogroup" aria-labelledby="language-label">
+          <label><input id="language-tr" type="radio" name="language" value="tr" /><span>Türkçe</span></label>
+          <label><input id="language-en" type="radio" name="language" value="en" /><span>English</span></label>
+        </div>
+      </div>
     </section>
 
     <section>
-      <h2 class="label">This session</h2>
+      <h2 class="label" data-i18n="session"></h2>
       <div class="row item">
-        <span>Posts shown</span>
+        <span data-i18n="shown"></span>
         <span id="shown" class="mono">0</span>
       </div>
       <div class="row item">
-        <span>Not recovered</span>
+        <span data-i18n="missed"></span>
         <span id="missed" class="mono">0</span>
       </div>
     </section>
 
-    <p class="muted disclosure">
-      The IDs of withheld posts go to the sources above, which also see your IP address. X cookies and tokens never
-      leave your browser. Source changes apply to posts loaded after this.
-    </p>
+    <p class="muted disclosure" data-i18n="disclosure"></p>
 
     <div class="actions">
-      <button id="clear" type="button">Clear recovered posts</button>
-      <button id="copy" type="button">Copy diagnostics</button>
+      <button id="clear" type="button" data-i18n="clear"></button>
+      <button id="copy" type="button" data-i18n="copy"></button>
     </div>
     <script src="popup.js"></script>
   </body>

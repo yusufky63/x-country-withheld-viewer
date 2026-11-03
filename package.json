@@ -1,6 +1,6 @@
 {
   "name": "x-country-withheld-viewer",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "type": "module",
   "description": "Chrome and Edge extension that shows country-withheld public posts on X inline, rendered by X itself, with a small marker.",

@@ -67,6 +67,7 @@ const deps: RewriteDeps = {
   recoverProfile: (user) => ask({ type: "recover-profile", user }, isProfileResult, { status: "provider_unavailable" }),
   userPosts: (request) => ask({ type: "user-posts", request }, isPostsPage, { status: "provider_unavailable", posts: [] }),
   conversation: (request) => ask({ type: "conversation", request }, isPostsPage, { status: "provider_unavailable", posts: [] }),
+  repostLabel: (name) => (document.documentElement.lang.startsWith("tr") ? `${name} yeniden gönderdi` : `${name} reposted`),
 };
 
 const rewriter = new ResponseRewriter(deps);

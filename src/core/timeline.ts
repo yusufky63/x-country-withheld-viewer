@@ -94,7 +94,12 @@ export function decodeCursor(value: unknown): SyntheticCursor | null {
   }
 }
 
-function tweetItemContent(post: PostRecord): Json {
+/** X draws this line as given, so it has to match the language of X's own interface. */
+export type RepostLabel = (name: string) => string;
+
+const englishRepostLabel: RepostLabel = (name) => `${name} reposted`;
+
+function tweetItemContent(post: PostRecord, repostLabel: RepostLabel = englishRepostLabel): Json {
   return {
     itemType: "TimelineTweet",
     __typename: "TimelineTweet",
@@ -105,7 +110,7 @@ function tweetItemContent(post: PostRecord): Json {
           socialContext: {
             type: "TimelineGeneralContext",
             contextType: "Retweet",
-            text: `${post.repostedBy.name} reposted`,
+            text: repostLabel(post.repostedBy.name),
             landingUrl: { url: `/${post.repostedBy.handle}`, urlType: "DeepLink" },
           },
         }
@@ -142,7 +147,7 @@ function cursorEntry(value: string, sortIndex: string, dialect: Dialect): Json {
   };
 }
 
-function timelineEntry(post: PostRecord, sortIndex: string, dialect: Dialect): Json {
+function timelineEntry(post: PostRecord, sortIndex: string, dialect: Dialect, repostLabel?: RepostLabel): Json {
   if (dialect === "relay") {
     return {
       entry_id: `tweet-${post.id}`,
@@ -160,7 +165,7 @@ function timelineEntry(post: PostRecord, sortIndex: string, dialect: Dialect): J
     content: {
       entryType: "TimelineTimelineItem",
       __typename: "TimelineTimelineItem",
-      itemContent: tweetItemContent(post),
+      itemContent: tweetItemContent(post, repostLabel),
       clientEventInfo: { component: "tweet", element: "tweet" },
     },
   };
@@ -208,8 +213,9 @@ export function buildUserEntries(
   start: string,
   next: { id: string; handle: string; cursor?: string; withReplies: boolean; country?: string },
   dialect: Dialect = "classic",
+  repostLabel?: RepostLabel,
 ): Json[] {
-  const { entries, nextSortIndex } = assignSortIndexes(posts, start, (post, index) => timelineEntry(post, index, dialect));
+  const { entries, nextSortIndex } = assignSortIndexes(posts, start, (post, index) => timelineEntry(post, index, dialect, repostLabel));
   if (next.cursor) {
     const { cursor, id, handle, withReplies, country } = next;
     entries.push(

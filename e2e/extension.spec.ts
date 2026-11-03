@@ -155,7 +155,7 @@ test("the marker appears beside the post's permalink and names its source", asyn
   await page.evaluate((url) => (window as never as { viaFetch(u: string): Promise<unknown> }).viaFetch(url), TWEET_DETAIL_URL);
   const mark = page.locator(`article[data-post="${WITHHELD_ID}"] .xcwv-mark`);
   await expect(mark).toHaveCount(1);
-  await expect(mark).toHaveAttribute("title", "Withheld in Turkey. Shown from FxTwitter.");
+  await expect(mark).toHaveAttribute("title", "Gizlendiği ülke: Türkiye. Kaynak: FxTwitter.");
   const box = await mark.boundingBox();
   expect(box?.width).toBeLessThanOrEqual(14);
   expect(box?.height).toBeLessThanOrEqual(14);
@@ -176,7 +176,7 @@ test("an unrecoverable post keeps X's tombstone and gets a plain note", async ({
   const text = await page.evaluate(() => fetch("/i/api/graphql/abc/UnrecoverableDetail").then((response) => response.text()));
   expect(text).toContain("TweetTombstone");
   // Which note appears depends on whether the live x.md answers within the recovery budget.
-  await expect(page.locator(".xcwv-note")).toHaveText(/Not found in alternative sources|did not respond/, { timeout: 15_000 });
+  await expect(page.locator(".xcwv-note")).toHaveText(/Alternatif kaynaklarda bulunamadı|yanıt vermedi/, { timeout: 15_000 });
 });
 
 test("the example withheld profile and its timeline come back through X's own requests", async ({ page }) => {
@@ -335,6 +335,36 @@ test("diagnostics record X's response shape for the popup", async ({ page, worke
       return diagnostics?.join("\n") ?? "";
     })
     .toContain("fetch UserByScreenName status=200");
+});
+
+test("the language can be switched to English without a reload", async ({ page, worker }) => {
+  await page.evaluate(([id, handle]) => (window as never as { renderPost(i: string, h: string): void }).renderPost(id as string, handle as string), [WITHHELD_ID, WITHHELD_HANDLE]);
+  await page.evaluate((url) => (window as never as { viaFetch(u: string): Promise<unknown> }).viaFetch(url), TWEET_DETAIL_URL);
+  const mark = page.locator(".xcwv-mark");
+  await expect(mark).toHaveAttribute("title", "Gizlendiği ülke: Türkiye. Kaynak: FxTwitter.");
+  await worker.evaluate(() => chrome.storage.local.set({ language: "en" }));
+  await expect(mark).toHaveAttribute("title", "Withheld in Turkey. Shown from FxTwitter.");
+  await expect(mark).toHaveCount(1);
+});
+
+test("popup: opens in Turkish and switches to English", async ({ context, worker }) => {
+  const extensionId = new URL(worker.url()).host;
+  await worker.evaluate(() => chrome.storage.local.clear());
+  const page = await context.newPage();
+  await page.goto(`chrome-extension://${extensionId}/popup.html`);
+  await expect(page.locator("body.ready")).toHaveCount(1);
+  await expect(page.locator('[data-i18n="sources"]')).toHaveText("Kaynaklar");
+  await expect(page.locator("#language-tr")).toBeChecked();
+  await expect(page.locator("html")).toHaveAttribute("lang", "tr");
+
+  await page.locator("#language-en").check({ force: true });
+  await expect(page.locator('[data-i18n="sources"]')).toHaveText("Sources");
+  await expect(page.locator("#clear")).toHaveText("Clear recovered posts");
+  await expect.poll(() => worker.evaluate(() => chrome.storage.local.get("language"))).toEqual({ language: "en" });
+
+  await page.reload();
+  await expect(page.locator('[data-i18n="sources"]')).toHaveText("Sources");
+  await expect(page.locator("#language-en")).toBeChecked();
 });
 
 test("popup: settings persist and it renders in both themes", async ({ context, worker }) => {

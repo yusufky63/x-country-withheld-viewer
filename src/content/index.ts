@@ -4,10 +4,15 @@ import { Marker } from "./marker";
 
 const marker = new Marker(document);
 
-void readSettings().then(({ glowBorder }) => marker.setGlow(glowBorder));
+void readSettings().then(({ glowBorder, language }) => {
+  marker.setGlow(glowBorder);
+  marker.setLanguage(language);
+});
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && changes.glowBorder) marker.setGlow(changes.glowBorder.newValue !== false);
+  if (area !== "local") return;
+  if (changes.glowBorder) marker.setGlow(changes.glowBorder.newValue !== false);
+  if (changes.language) marker.setLanguage(changes.language.newValue === "en" ? "en" : "tr");
 });
 
 async function relay({ requestId, request }: RequestMessage): Promise<void> {

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { AppliedMark } from "../core/types";
-import { Marker, markTitle, profileMarkTitle } from "./marker";
+import { Marker } from "./marker";
 
 const CREATED_AT = 1793648911000;
 const ISO = new Date(CREATED_AT).toISOString();
@@ -20,27 +20,12 @@ function marks() {
   return document.querySelectorAll<HTMLElement>(".xcwv-mark");
 }
 
-describe("markTitle", () => {
-  it("names the place and the source", () => {
-    expect(markTitle(mark)).toBe("Withheld in Turkey. Shown from FxTwitter.");
-    expect(markTitle({ ...mark, country: undefined, source: "xmd" })).toBe("Withheld in your country. Shown from x.md.");
-  });
-
-  it("does not claim a legal hold it has no evidence for", () => {
-    expect(markTitle({ ...mark, kind: "missing" })).toBe("Not available on X here. Shown from FxTwitter.");
-  });
-
-  it("spells out X's ISO country codes on profiles", () => {
-    expect(profileMarkTitle({ handle: "a", source: "fxtwitter", country: "TR" })).toMatch(/^Account withheld in (Türkiye|Turkey)\. Shown from FxTwitter\.$/);
-  });
-});
-
 describe("Marker", () => {
   let marker: Marker;
 
   beforeEach(() => {
     document.body.innerHTML = "<main></main>";
-    marker = new Marker(document);
+    marker = new Marker(document, "en");
   });
 
   function article(id: string, handle = "example_replier") {
@@ -91,6 +76,28 @@ describe("Marker", () => {
     }
     expect(document.querySelector("#row")?.getAttribute("data-xcwv-recovered")).toBe(mark.id);
     expect(document.querySelector("article")?.hasAttribute("data-xcwv-recovered")).toBe(false);
+  });
+
+  it("writes in Turkish by default", () => {
+    document.querySelector("main")!.innerHTML = article(mark.id);
+    const turkish = new Marker(document);
+    turkish.add([mark], []);
+    turkish.scan();
+    expect(marks()[0]?.title).toBe("Gizlendiği ülke: Türkiye. Kaynak: FxTwitter.");
+  });
+
+  it("redraws what is on screen when the language changes", () => {
+    const message = "This Post from @a has been withheld in Turkey";
+    document.querySelector("main")!.innerHTML = article(mark.id) + `<div><div dir="auto"><span>${message}</span></div></div>`;
+    marker.add([mark], [{ id: "2", status: "not_found", message }]);
+    marker.scan();
+    expect(document.querySelector(".xcwv-note")?.textContent).toBe("Not found in alternative sources.");
+
+    marker.setLanguage("tr");
+    expect(marks()).toHaveLength(1);
+    expect(marks()[0]?.title).toBe("Gizlendiği ülke: Türkiye. Kaynak: FxTwitter.");
+    expect(document.querySelectorAll(".xcwv-note")).toHaveLength(1);
+    expect(document.querySelector(".xcwv-note")?.textContent).toBe("Alternatif kaynaklarda bulunamadı.");
   });
 
   it("keeps the eye but drops the glow when the setting is off, and restores it", () => {
