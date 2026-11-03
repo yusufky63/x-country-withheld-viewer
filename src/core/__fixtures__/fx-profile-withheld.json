@@ -1,0 +1,35 @@
+{
+  "code": 200,
+  "message": "OK",
+  "user": {
+    "screen_name": "BlockedSample",
+    "url": "https://x.com/BlockedSample",
+    "id": "1800000000000000003",
+    "followers": 543616,
+    "following": 4,
+    "likes": 6918,
+    "media_count": 1090,
+    "statuses": 7807,
+    "name": "Sample",
+    "description": "",
+    "raw_description": {
+      "text": "",
+      "facets": []
+    },
+    "location": "",
+    "banner_url": "",
+    "avatar_url": "https://pbs.twimg.com/profile_images/1000000000000000003/blocked_normal.jpg",
+    "joined": "Thu Dec 30 14:44:08 +0000 2021",
+    "protected": false,
+    "website": {
+      "url": "http://example.com/sample",
+      "display_url": "example.com/sample"
+    },
+    "verification": {
+      "verified": true,
+      "verified_at": null,
+      "type": "individual"
+    },
+    "type": "profile"
+  }
+}

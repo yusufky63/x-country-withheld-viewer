@@ -1,0 +1,70 @@
+{
+  "data": {
+    "user": {
+      "result": {
+        "__typename": "User",
+        "action_counts": { "favorites_count": 6918 },
+        "affiliates_highlighted_label": {},
+        "avatar": { "image_url": "" },
+        "banner": { "image_url": "" },
+        "business_account": {},
+        "core": { "created_at": "Thu Dec 30 14:44:08 +0000 2021", "name": "", "screen_name": "BlockedSample" },
+        "creator_subscriptions_count": 0,
+        "follow_request_sent": false,
+        "grok_translated_bio_with_availability": { "is_available": false },
+        "has_graduated_access": true,
+        "has_hidden_subscriptions_on_profile": false,
+        "highlights_info": { "can_highlight_tweets": true, "highlighted_tweets": "0" },
+        "id": "VXNlcjoxODAwMDAwMDAwMDAwMDAwMDAz",
+        "is_blue_verified": true,
+        "is_profile_translatable": false,
+        "legacy_extended_profile": {},
+        "location": { "location": "" },
+        "media_permissions": { "can_media_tag": false },
+        "notifications_settings": { "notifications_enabled": false },
+        "parody_commentary_fan_label": "None",
+        "pinned_items": {},
+        "possibly_sensitive": false,
+        "privacy": { "protected": false },
+        "profile_bio": {
+          "description": "@BlockedSample has been withheld in TR in response to a legal demand. Learn more.",
+          "entities": {
+            "description": {
+              "urls": [
+                {
+                  "display_url": "Learn more",
+                  "expanded_url": "https://help.x.com/en/rules-and-policies/post-withheld-by-country",
+                  "indices": [70, 80],
+                  "url": "https://help.x.com/en/rules-and-policies/post-withheld-by-country"
+                }
+              ]
+            }
+          },
+          "with_held_scope": "user",
+          "withheld_in_countries": ["TR"]
+        },
+        "profile_image_shape": "Circle",
+        "profile_metadata": { "profile_interstitial_type": "" },
+        "profile_sort_enabled": true,
+        "profile_translation": { "translator_type": "none" },
+        "relationship_counts": { "followers": 543623, "following": 4 },
+        "relationship_perspectives": {
+          "blocked_by": false,
+          "blocking": false,
+          "followed_by": false,
+          "following": true,
+          "live_following": false,
+          "muting": false
+        },
+        "rest_id": "1800000000000000003",
+        "super_follow_eligible": false,
+        "super_followed_by": false,
+        "super_following": false,
+        "tweet_counts": { "media_tweets": 1090, "tweets": 7807 },
+        "user_seed_tweet_count": 0,
+        "verification": { "verified": false },
+        "website": { "url": "https://t.co/sampleSite" }
+      }
+    }
+  }
+}

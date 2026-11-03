@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <title>X Country Withheld Viewer</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="row head">
+      <div>
+        <h1>Withheld Viewer <span id="version" class="mono muted"></span></h1>
+        <p class="muted">Shows country-withheld posts on X like any other post.</p>
+      </div>
+      <label class="switch">
+        <input id="enabled" type="checkbox" aria-label="Show withheld posts" />
+        <span aria-hidden="true"></span>
+      </label>
+    </header>
+
+    <section>
+      <h2 class="label">Sources</h2>
+      <div class="row item">
+        <span>FxTwitter</span>
+        <span class="muted mono">primary</span>
+      </div>
+      <div class="row item">
+        <label for="xmd">x.md fallback</label>
+        <label class="switch">
+          <input id="xmd" type="checkbox" />
+          <span aria-hidden="true"></span>
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="label">Display</h2>
+      <div class="row item">
+        <label for="glow">Glowing border</label>
+        <label class="switch">
+          <input id="glow" type="checkbox" />
+          <span aria-hidden="true"></span>
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="label">This session</h2>
+      <div class="row item">
+        <span>Posts shown</span>
+        <span id="shown" class="mono">0</span>
+      </div>
+      <div class="row item">
+        <span>Not recovered</span>
+        <span id="missed" class="mono">0</span>
+      </div>
+    </section>
+
+    <p class="muted disclosure">
+      The IDs of withheld posts go to the sources above, which also see your IP address. X cookies and tokens never
+      leave your browser. Source changes apply to posts loaded after this.
+    </p>
+
+    <div class="actions">
+      <button id="clear" type="button">Clear recovered posts</button>
+      <button id="copy" type="button">Copy diagnostics</button>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

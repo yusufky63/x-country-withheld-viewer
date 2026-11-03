@@ -1,0 +1,105 @@
+{
+  "status": {
+    "type": "status",
+    "url": "https://x.com/example_replier/status/1900000000000000002",
+    "id": "1900000000000000002",
+    "text": "@ExampleAuthor Sample reply text that stands in for a withheld post. sample sample sample sample sample sample sample sample sample s",
+    "raw_text": {
+      "text": "@ExampleAuthor Sample reply text that stands in for a withheld post. sample sample sample sample sample sample sample sample sample s",
+      "display_text_range": [
+        15,
+        133
+      ],
+      "facets": [
+        {
+          "type": "mention",
+          "indices": [
+            0,
+            14
+          ],
+          "original": "ExampleAuthor",
+          "id": "1800000000000000001"
+        }
+      ]
+    },
+    "author": {
+      "screen_name": "example_replier",
+      "url": "https://x.com/example_replier",
+      "id": "1800000000000000002",
+      "followers": 270,
+      "following": 45,
+      "likes": 195037,
+      "media_count": 3103,
+      "statuses": 27558,
+      "name": "Example Replier",
+      "description": "",
+      "raw_description": {
+        "text": "",
+        "facets": []
+      },
+      "location": "",
+      "banner_url": "https://pbs.twimg.com/profile_banners/1800000000000000002/1700000000",
+      "avatar_url": "https://pbs.twimg.com/profile_images/1000000000000000002/replier_200x200.jpg",
+      "joined": "Mon Apr 27 13:41:54 +0000 2020",
+      "protected": false,
+      "website": null,
+      "verification": {
+        "verified": false,
+        "verified_at": null,
+        "type": null
+      },
+      "type": "profile"
+    },
+    "replies": 0,
+    "reposts": 0,
+    "likes": 0,
+    "bookmarks": 0,
+    "quotes": 0,
+    "embed_card": "tweet",
+    "created_at": "Mon Nov 02 19:48:31 +0000 2026",
+    "created_timestamp": 1793648911,
+    "views": 2424,
+    "is_note_tweet": false,
+    "community_note": null,
+    "lang": "tr",
+    "replying_to": {
+      "screen_name": "ExampleAuthor",
+      "status": "1900000000000000001",
+      "url": "https://x.com/ExampleAuthor/status/1900000000000000001",
+      "profile_url": "https://x.com/ExampleAuthor"
+    },
+    "media": {},
+    "provider": "twitter",
+    "reposted_by": null
+  },
+  "thread": null,
+  "author": {
+    "screen_name": "example_replier",
+    "url": "https://x.com/example_replier",
+    "id": "1800000000000000002",
+    "followers": 270,
+    "following": 45,
+    "likes": 195037,
+    "media_count": 3103,
+    "statuses": 27558,
+    "name": "Example Replier",
+    "description": "",
+    "raw_description": {
+      "text": "",
+      "facets": []
+    },
+    "location": "",
+    "banner_url": "https://pbs.twimg.com/profile_banners/1800000000000000002/1700000000",
+    "avatar_url": "https://pbs.twimg.com/profile_images/1000000000000000002/replier_200x200.jpg",
+    "joined": "Mon Apr 27 13:41:54 +0000 2020",
+    "protected": false,
+    "website": null,
+    "verification": {
+      "verified": false,
+      "verified_at": null,
+      "type": null
+    },
+    "type": "profile"
+  },
+  "code": 200
+}

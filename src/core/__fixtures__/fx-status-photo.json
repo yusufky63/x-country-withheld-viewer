@@ -1,0 +1,122 @@
+{
+  "status": {
+    "type": "status",
+    "url": "https://x.com/ExampleAuthor/status/1900000000000000001",
+    "id": "1900000000000000001",
+    "text": "Sample root post used by the tests, with a photo attached. sample sample sample sa",
+    "raw_text": {
+      "text": "Sample root post used by the tests, with a photo attached. sample sample sample sa https://t.co/sampleLink",
+      "display_text_range": [
+        0,
+        82
+      ],
+      "facets": [
+        {
+          "type": "media",
+          "indices": [
+            83,
+            106
+          ],
+          "id": "1900000000000000010",
+          "display": "pic.x.com/sampleLink",
+          "original": "https://t.co/sampleLink",
+          "replacement": "https://x.com/ExampleAuthor/status/1900000000000000001/photo/1"
+        }
+      ]
+    },
+    "author": {
+      "screen_name": "ExampleAuthor",
+      "url": "https://x.com/ExampleAuthor",
+      "id": "1800000000000000001",
+      "followers": 2605,
+      "following": 179,
+      "likes": 11013,
+      "media_count": 358,
+      "statuses": 552,
+      "name": "Example Author",
+      "description": "Sample bio.",
+      "raw_description": {
+        "text": "Sample bio.",
+        "facets": []
+      },
+      "location": "",
+      "banner_url": "https://pbs.twimg.com/profile_banners/1800000000000000001/1700000001",
+      "avatar_url": "https://pbs.twimg.com/profile_images/1000000000000000001/author_200x200.jpg",
+      "joined": "Sun May 31 01:48:35 +0000 2026",
+      "protected": false,
+      "website": null,
+      "verification": {
+        "verified": false,
+        "verified_at": null,
+        "type": null
+      },
+      "type": "profile"
+    },
+    "replies": 76,
+    "reposts": 34,
+    "likes": 2512,
+    "bookmarks": 527,
+    "quotes": 9,
+    "embed_card": "summary_large_image",
+    "created_at": "Mon Nov 02 14:38:25 +0000 2026",
+    "created_timestamp": 1793630305,
+    "possibly_sensitive": false,
+    "views": 289219,
+    "is_note_tweet": false,
+    "community_note": null,
+    "lang": "en",
+    "replying_to": null,
+    "media": {
+      "all": [
+        {
+          "type": "photo",
+          "id": "1900000000000000010",
+          "url": "https://pbs.twimg.com/media/SampleMediaKey.jpg?name=orig",
+          "width": 1233,
+          "height": 800
+        }
+      ],
+      "photos": [
+        {
+          "type": "photo",
+          "id": "1900000000000000010",
+          "url": "https://pbs.twimg.com/media/SampleMediaKey.jpg?name=orig",
+          "width": 1233,
+          "height": 800
+        }
+      ]
+    },
+    "provider": "twitter",
+    "reposted_by": null
+  },
+  "thread": null,
+  "author": {
+    "screen_name": "ExampleAuthor",
+    "url": "https://x.com/ExampleAuthor",
+    "id": "1800000000000000001",
+    "followers": 2605,
+    "following": 179,
+    "likes": 11013,
+    "media_count": 358,
+    "statuses": 552,
+    "name": "Example Author",
+    "description": "Old account got hacked by some Nigerian. Now I'm just some random who will never get his old follow numbers back. Yeah I guess I did some time in the Marines.",
+    "raw_description": {
+      "text": "Old account got hacked by some Nigerian. Now I'm just some random who will never get his old follow numbers back. Yeah I guess I did some time in the Marines.",
+      "facets": []
+    },
+    "location": "",
+    "banner_url": "https://pbs.twimg.com/profile_banners/1800000000000000001/1700000001",
+    "avatar_url": "https://pbs.twimg.com/profile_images/1000000000000000001/author_200x200.jpg",
+    "joined": "Sun May 31 01:48:35 +0000 2026",
+    "protected": false,
+    "website": null,
+    "verification": {
+      "verified": false,
+      "verified_at": null,
+      "type": null
+    },
+    "type": "profile"
+  },
+  "code": 200
+}

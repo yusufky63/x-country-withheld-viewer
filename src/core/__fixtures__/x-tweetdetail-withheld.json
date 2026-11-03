@@ -1,0 +1,80 @@
+{
+  "data": {
+    "threaded_conversation_with_injections_v2": {
+      "instructions": [
+        {
+          "type": "TimelineAddEntries",
+          "entries": [
+            {
+              "entryId": "tweet-1900000000000000001",
+              "sortIndex": "7205000000000000000",
+              "content": {
+                "entryType": "TimelineTimelineItem",
+                "__typename": "TimelineTimelineItem",
+                "itemContent": {
+                  "itemType": "TimelineTweet",
+                  "__typename": "TimelineTweet",
+                  "tweet_results": {
+                    "result": {
+                      "__typename": "Tweet",
+                      "rest_id": "1900000000000000001",
+                      "legacy": {
+                        "conversation_id_str": "1900000000000000001",
+                        "full_text": "Sample root post used by the tests, with a photo attached. sample sample sample sa"
+                      }
+                    }
+                  },
+                  "tweetDisplayType": "SelfThread"
+                }
+              }
+            },
+            {
+              "entryId": "conversationthread-1900000000000000002",
+              "sortIndex": "7204999999999999999",
+              "content": {
+                "entryType": "TimelineTimelineModule",
+                "__typename": "TimelineTimelineModule",
+                "items": [
+                  {
+                    "entryId": "conversationthread-1900000000000000002-tweet-1900000000000000002",
+                    "item": {
+                      "itemContent": {
+                        "itemType": "TimelineTweet",
+                        "__typename": "TimelineTweet",
+                        "tweet_results": {
+                          "result": {
+                            "__typename": "TweetTombstone",
+                            "tombstone": {
+                              "__typename": "TextTombstone",
+                              "text": {
+                                "rtl": false,
+                                "text": "This Post from @example_replier has been withheld in Turkey in response to a legal demand. Learn more",
+                                "entities": [
+                                  {
+                                    "fromIndex": 90,
+                                    "toIndex": 100,
+                                    "ref": {
+                                      "type": "TimelineUrl",
+                                      "url": "https://help.x.com/en/rules-and-policies/post-withheld-by-country",
+                                      "urlType": "ExternalUrl"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        "tweetDisplayType": "Tweet"
+                      }
+                    }
+                  }
+                ],
+                "displayType": "VerticalConversation"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+*.zip
+.env*
+.dev.vars
+
+# Private research notes with real accounts and post IDs.
+docs/design-research.md

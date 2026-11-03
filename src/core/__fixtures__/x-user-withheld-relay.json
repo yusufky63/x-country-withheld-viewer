@@ -1,0 +1,31 @@
+{
+  "data": {
+    "user_result_by_screen_name": {
+      "id": "VXNlclJlc3VsdHM6MTgwMDAwMDAwMDAwMDAwMDAwMw==",
+      "result": {
+        "__typename": "User",
+        "core": { "screen_name": "BlockedSample" },
+        "id": "VXNlcjoxODAwMDAwMDAwMDAwMDAwMDAz",
+        "legacy": { "withheld_in_countries": ["TR"], "withheld_scope": "user" },
+        "profile_bio": {
+          "description": "@BlockedSample has been withheld in TR in response to a legal demand. Learn more.",
+          "entities": {
+            "description": {
+              "urls": [
+                {
+                  "display_url": "Learn more",
+                  "expanded_url": "https://help.x.com/en/rules-and-policies/post-withheld-by-country",
+                  "indices": [70, 80],
+                  "url": "https://help.x.com/en/rules-and-policies/post-withheld-by-country"
+                }
+              ]
+            }
+          }
+        },
+        "profile_image_shape": "Circle",
+        "relationship_perspectives": { "muting": false },
+        "rest_id": "1800000000000000003"
+      }
+    }
+  }
+}

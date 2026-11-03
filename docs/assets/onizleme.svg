@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 290" width="880" height="290" role="img" aria-labelledby="title desc">
+  <title id="title">Eklentisiz ve eklentiyle görünüm</title>
+  <desc id="desc">Solda X'in gizleme uyarısı, sağda aynı yerde normal görünen ve kenarı parlayan örnek bir gönderi.</desc>
+  <style>
+    :root { --bg: #ffffff; --line: #e3e5e9; --ink: #0f1419; --muted: #536471; --soft: #f7f9f9; --accent: #1d9bf0; --ghost: #eff3f4; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #000000; --line: #2f3336; --ink: #e7e9ea; --muted: #71767b; --soft: #16181c; --ghost: #202327; }
+    }
+    text { font-family: "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif; fill: var(--ink); }
+    .label { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 11px; letter-spacing: 0.12em; fill: var(--muted); }
+    .name { font-size: 14px; font-weight: 700; }
+    .muted { font-size: 13px; fill: var(--muted); }
+    .body { font-size: 14px; }
+    .icon { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+
+  <text class="label" x="1" y="13">EKLENTİSİZ</text>
+  <rect x="0.5" y="24.5" width="429" height="265" rx="8" fill="var(--bg)" stroke="var(--line)" />
+  <rect x="16" y="46" width="398" height="82" rx="12" fill="var(--soft)" stroke="var(--line)" />
+  <text class="muted" x="32" y="80">Bu gönderi, yasal bir talep nedeniyle Türkiye'de</text>
+  <text class="muted" x="32" y="101">gizlendi. <tspan fill="#1d9bf0">Daha fazla bilgi al</tspan></text>
+
+  <text class="label" x="451" y="13">EKLENTİYLE</text>
+  <rect x="450.5" y="24.5" width="429" height="265" rx="8" fill="var(--bg)" stroke="var(--line)" />
+  <clipPath id="row"><rect x="451" y="25" width="428" height="147" /></clipPath>
+  <g clip-path="url(#row)" fill="none" stroke="var(--accent)">
+    <rect x="451" y="25" width="428" height="147" stroke-opacity="0.08" stroke-width="20" />
+    <rect x="451" y="25" width="428" height="147" stroke-opacity="0.1" stroke-width="10" />
+    <rect x="451.5" y="25.5" width="427" height="146" stroke-opacity="0.75" />
+  </g>
+  <circle cx="486" cy="68" r="17" fill="var(--muted)" fill-opacity="0.55" />
+  <text class="name" x="514" y="64">Örnek Hesap</text>
+  <text class="muted" x="604" y="64">@ornek_hesap · 2s</text>
+  <g class="icon" transform="translate(718 52) scale(0.58)">
+    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" />
+    <circle cx="12" cy="12" r="3" />
+  </g>
+  <text class="body" x="514" y="88">Bu gönderi Türkiye'de gizlenmişti. Şimdi aynı yerde,</text>
+  <text class="body" x="514" y="109">diğer gönderilerle aynı görünüyor.</text>
+  <g class="icon">
+    <circle cx="522" cy="140" r="7" />
+    <path d="M4 7l3-3 3 3M7 4v10a2 2 0 0 0 2 2h5M20 17l-3 3-3-3M17 20V10a2 2 0 0 0-2-2h-5" transform="translate(586 131) scale(0.75)" />
+    <path d="M673 145s-7-4-7-8.5a3.8 3.8 0 0 1 7-2 3.8 3.8 0 0 1 7 2c0 4.500-7 8.500-7 8.500Z" />
+    <path d="M744 147v-7M750 147v-13M756 147v-9" />
+  </g>
+  <text class="muted" x="536" y="145">12</text>
+  <text class="muted" x="610" y="145">4</text>
+  <text class="muted" x="686" y="145">86</text>
+  <text class="muted" x="764" y="145">2 B</text>
+
+  <g id="ghost-left" fill="var(--ghost)">
+    <circle cx="36" cy="172" r="17" />
+    <rect x="64" y="158" width="190" height="10" rx="5" />
+    <rect x="64" y="178" width="330" height="10" rx="5" />
+    <circle cx="36" cy="240" r="17" />
+    <rect x="64" y="226" width="150" height="10" rx="5" />
+    <rect x="64" y="246" width="300" height="10" rx="5" />
+  </g>
+  <g fill="var(--ghost)" transform="translate(450 32)">
+    <circle cx="36" cy="172" r="17" />
+    <rect x="64" y="158" width="190" height="10" rx="5" />
+    <rect x="64" y="178" width="330" height="10" rx="5" />
+    <rect x="64" y="198" width="240" height="10" rx="5" />
+  </g>
+</svg>

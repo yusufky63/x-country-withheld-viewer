@@ -1,0 +1,133 @@
+{
+  "code": 200,
+  "results": [
+    {
+      "type": "status",
+      "url": "https://x.com/BlockedSample/status/1900000000000000003",
+      "id": "1900000000000000003",
+      "text": "Sample original post from the blocked account.",
+      "raw_text": {
+        "text": "Sample original post from the blocked account.",
+        "display_text_range": [
+          0,
+          46
+        ],
+        "facets": []
+      },
+      "author": {
+        "screen_name": "BlockedSample",
+        "url": "https://x.com/BlockedSample",
+        "id": "1800000000000000003",
+        "followers": 543618,
+        "following": 4,
+        "likes": 6918,
+        "media_count": 1090,
+        "statuses": 7807,
+        "name": "Sample",
+        "description": "",
+        "raw_description": {
+          "text": "",
+          "facets": []
+        },
+        "location": "",
+        "banner_url": "",
+        "avatar_url": "https://pbs.twimg.com/profile_images/1000000000000000003/blocked_200x200.jpg",
+        "joined": "Thu Dec 30 14:44:08 +0000 2021",
+        "protected": false,
+        "website": null,
+        "verification": {
+          "verified": true,
+          "verified_at": null,
+          "type": "individual"
+        },
+        "type": "profile"
+      },
+      "replies": 21,
+      "reposts": 64,
+      "likes": 1235,
+      "bookmarks": 61,
+      "quotes": 1,
+      "embed_card": "tweet",
+      "created_at": "Tue Nov 03 09:40:12 +0000 2026",
+      "created_timestamp": 1793698812,
+      "possibly_sensitive": false,
+      "views": 24657,
+      "is_note_tweet": false,
+      "community_note": null,
+      "lang": "en",
+      "replying_to": null,
+      "media": {},
+      "provider": "twitter",
+      "reposted_by": null
+    },
+    {
+      "type": "status",
+      "url": "https://x.com/ExampleAuthor/status/1900000000000000004",
+      "id": "1900000000000000004",
+      "text": "Sample post by another account, reposted by the blocked one.",
+      "raw_text": {
+        "text": "Sample post by another account, reposted by the blocked one.",
+        "display_text_range": [
+          0,
+          60
+        ],
+        "facets": []
+      },
+      "author": {
+        "screen_name": "ExampleAuthor",
+        "url": "https://x.com/ExampleAuthor",
+        "id": "1800000000000000001",
+        "followers": 2605,
+        "following": 179,
+        "likes": 11013,
+        "media_count": 358,
+        "statuses": 552,
+        "name": "Example Author",
+        "description": "Sample bio.",
+        "raw_description": {
+          "text": "Sample bio.",
+          "facets": []
+        },
+        "location": "",
+        "banner_url": "https://pbs.twimg.com/profile_banners/1800000000000000001/1700000001",
+        "avatar_url": "https://pbs.twimg.com/profile_images/1000000000000000001/author_200x200.jpg",
+        "joined": "Sun May 31 01:48:35 +0000 2026",
+        "protected": false,
+        "website": null,
+        "verification": {
+          "verified": false,
+          "verified_at": null,
+          "type": null
+        },
+        "type": "profile"
+      },
+      "replies": 21,
+      "reposts": 64,
+      "likes": 1235,
+      "bookmarks": 61,
+      "quotes": 1,
+      "embed_card": "tweet",
+      "created_at": "Tue Nov 03 09:40:12 +0000 2026",
+      "created_timestamp": 1793698812,
+      "possibly_sensitive": false,
+      "views": 24657,
+      "is_note_tweet": false,
+      "community_note": null,
+      "lang": "en",
+      "replying_to": null,
+      "media": {},
+      "provider": "twitter",
+      "reposted_by": {
+        "id": "1800000000000000003",
+        "name": "Sample",
+        "screen_name": "BlockedSample",
+        "avatar_url": "https://pbs.twimg.com/profile_images/1000000000000000003/blocked_200x200.jpg",
+        "url": "https://x.com/BlockedSample"
+      }
+    }
+  ],
+  "cursor": {
+    "top": null,
+    "bottom": "BOTTOM_CURSOR"
+  }
+}

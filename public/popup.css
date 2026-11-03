@@ -1,0 +1,212 @@
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 400;
+  src: url("fonts/dm-sans-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 500;
+  src: url("fonts/dm-sans-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-weight: 400;
+  src: url("fonts/jetbrains-mono-400.woff2") format("woff2");
+}
+
+:root {
+  --canvas: #ffffff;
+  --surface-muted: #f4f5f7;
+  --ink: #0a0b0d;
+  --ink-muted: #5b616e;
+  --line: #e3e5e9;
+  --line-strong: #8a919e;
+  --primary: #0370fd;
+  --primary-fill: #0370fd;
+  --primary-contrast: #ffffff;
+  --dur-fast: 120ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas: #0a0b0d;
+    --surface-muted: #16181c;
+    --ink: #f4f5f7;
+    --ink-muted: #a0a6b1;
+    --line: #26292f;
+    --line-strong: #6b7280;
+    --primary: #2b86ff;
+    --primary-fill: #1f6fe0;
+    --primary-contrast: #ffffff;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 320px;
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font: 400 14px/1.5 "DM Sans", system-ui, sans-serif;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.head {
+  align-items: flex-start;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+section {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.item {
+  min-height: 32px;
+}
+
+.label {
+  margin-bottom: 4px;
+  color: var(--ink-muted);
+  font: 400 11px/1.5 "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.muted {
+  color: var(--ink-muted);
+}
+
+.mono {
+  font: 400 12px/1.5 "JetBrains Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.disclosure {
+  padding: 12px 16px 0;
+  font-size: 12px;
+}
+
+.actions {
+  display: grid;
+  gap: 8px;
+  padding: 12px 16px 16px;
+}
+
+button {
+  display: block;
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font: 500 13px/1 "DM Sans", system-ui, sans-serif;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+button:hover {
+  background: var(--surface-muted);
+}
+
+button:disabled {
+  color: var(--ink-muted);
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: 36px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.switch span {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 9999px;
+  background: var(--canvas);
+  pointer-events: none;
+}
+
+/* Settings load after first paint, so switches only animate once they hold real values. */
+body.ready .switch span {
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+body.ready .switch span::after {
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.switch span::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: var(--line-strong);
+}
+
+.switch input:checked + span {
+  border-color: var(--primary-fill);
+  background: var(--primary-fill);
+}
+
+.switch input:checked + span::after {
+  background: var(--primary-contrast);
+  transform: translateX(16px);
+}
+
+.switch input:focus-visible + span {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
