@@ -4,12 +4,17 @@ export interface BodyRewriter {
   rewrite(text: string, ctx: RequestContext): Promise<string>;
   /** True when this request's error response should be replaced too. */
   takesOverErrors(ctx: RequestContext): boolean;
+  /** True when X's REST responses about users should be read as well. */
+  watchesRestUsers(): boolean;
 }
 
 type Json = Record<string, unknown>;
 
 // The classic client calls /i/api/graphql/<id>/<Op>, the Relay client api.x.com/graphql/<id>/<Op>.
 const GRAPHQL_PATH = /\/graphql\/[^/?#]+\/([A-Za-z0-9_]+)\/?$/;
+// The REST endpoints that hand X's client whole user objects. A list, not a prefix, because
+// reading a body waits for its end, and other endpoints under this prefix can stream.
+const REST_USER_PATH = /\/1\.1\/(users\/lookup|friends\/[a-z_/]+|friendships\/[a-z_/]+|blocks\/[a-z_/]+|mutes\/users\/[a-z_/]+)\.json$/;
 
 function parseJsonObject(raw: unknown): Json {
   if (typeof raw !== "string") return {};
@@ -35,6 +40,21 @@ export function parseGraphqlRequest(url: string, body: unknown, base: string): R
   return { operation, variables: typeof variables === "object" && variables !== null ? (variables as Json) : {} };
 }
 
+export function parseRestUserRequest(url: string, base: string): RequestContext | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(url, base);
+  } catch {
+    return null;
+  }
+  const path = parsed.pathname.match(REST_USER_PATH)?.[1];
+  return path ? { operation: `rest:${path}`, variables: {} } : null;
+}
+
+function requestContext(url: string, body: unknown, base: string, rewriter: BodyRewriter): RequestContext | null {
+  return parseGraphqlRequest(url, body, base) ?? (rewriter.watchesRestUsers() ? parseRestUserRequest(url, base) : null);
+}
+
 async function replaceFetchBody(response: Response, ctx: RequestContext, rewriter: BodyRewriter): Promise<Response> {
   if (!response.ok && !rewriter.takesOverErrors(ctx)) return response;
   try {
@@ -56,12 +76,12 @@ async function replaceFetchBody(response: Response, ctx: RequestContext, rewrite
   }
 }
 
-/** Only GraphQL responses are read, and the original passes through unless something was recovered. */
+/** Only GraphQL and listed REST user responses are read, and the original passes through unless something was recovered. */
 export function installFetchHook(win: Window & typeof globalThis, rewriter: BodyRewriter): void {
   const nativeFetch = win.fetch;
   win.fetch = function hookedFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
-    const ctx = parseGraphqlRequest(url, init?.body, win.location.href);
+    const ctx = requestContext(url, init?.body, win.location.href, rewriter);
     const pending = nativeFetch.call(win, input, init);
     return ctx ? pending.then((response) => replaceFetchBody(response, ctx, rewriter)) : pending;
   } as typeof fetch;
@@ -112,7 +132,7 @@ export function installXhrHook(win: Window & typeof globalThis, rewriter: BodyRe
     }
 
     override send(body?: Document | XMLHttpRequestBodyInit | null): void {
-      if (this.#watch) this.#ctx = parseGraphqlRequest(this.#url, body, win.location.href);
+      if (this.#watch) this.#ctx = requestContext(this.#url, body, win.location.href, rewriter);
       super.send(body);
     }
 

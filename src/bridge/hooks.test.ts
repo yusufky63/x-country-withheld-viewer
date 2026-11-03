@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { type BodyRewriter, installFetchHook, parseGraphqlRequest } from "./hooks";
+import { type BodyRewriter, installFetchHook, parseGraphqlRequest, parseRestUserRequest } from "./hooks";
 
 const BASE = "https://x.com/home";
 
@@ -42,12 +42,40 @@ function fakeWindow(response: Response) {
 }
 
 function rewriterReturning(next: string, takesOverErrors = false): BodyRewriter {
-  return { rewrite: vi.fn(async () => next), takesOverErrors: vi.fn(() => takesOverErrors) };
+  return { rewrite: vi.fn(async () => next), takesOverErrors: vi.fn(() => takesOverErrors), watchesRestUsers: vi.fn(() => false) };
 }
 
 const GRAPHQL_URL = "https://x.com/i/api/graphql/abc/TweetDetail";
 
+describe("parseRestUserRequest", () => {
+  it("reads the REST endpoints that return whole users", () => {
+    expect(parseRestUserRequest("/i/api/1.1/friends/following/list.json?count=20", BASE)?.operation).toBe("rest:friends/following/list");
+    expect(parseRestUserRequest("https://x.com/i/api/1.1/users/lookup.json", BASE)?.operation).toBe("rest:users/lookup");
+    expect(parseRestUserRequest("https://api.x.com/1.1/friendships/create.json", BASE)?.operation).toBe("rest:friendships/create");
+  });
+
+  it("leaves other endpoints alone, since reading a body waits for its end", () => {
+    expect(parseRestUserRequest("/i/api/2/grok/add_response.json", BASE)).toBeNull();
+    expect(parseRestUserRequest("/i/api/1.1/account/settings.json", BASE)).toBeNull();
+    expect(parseRestUserRequest("/i/api/graphql/abc/UserByScreenName", BASE)).toBeNull();
+  });
+});
+
 describe("installFetchHook", () => {
+  it("reads REST user responses only while there is an account to protect", async () => {
+    const url = "https://x.com/i/api/1.1/friends/following/list.json";
+    const idle = rewriterReturning("changed");
+    const first = fakeWindow(new Response("body"));
+    installFetchHook(first.win, idle);
+    await first.win.fetch(url);
+    expect(idle.rewrite).not.toHaveBeenCalled();
+
+    const watching = { ...rewriterReturning("changed"), watchesRestUsers: () => true };
+    const second = fakeWindow(new Response("body"));
+    installFetchHook(second.win, watching);
+    await expect((await second.win.fetch(url)).text()).resolves.toBe("changed");
+  });
+
   it("does not read anything outside GraphQL", async () => {
     const original = new Response("hello");
     const { win } = fakeWindow(original);
@@ -93,7 +121,7 @@ describe("installFetchHook", () => {
   it("keeps X working if the rewriter throws", async () => {
     const original = new Response("fine");
     const { win } = fakeWindow(original);
-    installFetchHook(win, { rewrite: vi.fn(async () => Promise.reject(new Error("boom"))), takesOverErrors: () => false });
+    installFetchHook(win, { rewrite: vi.fn(async () => Promise.reject(new Error("boom"))), takesOverErrors: () => false, watchesRestUsers: () => false });
     await expect(win.fetch(GRAPHQL_URL)).resolves.toBe(original);
   });
 

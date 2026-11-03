@@ -23,6 +23,9 @@ const RESUME_NAVIGATION_DELAY_MS = 600;
 // A signed-in page hydrates more slowly than a signed-out one, so the check repeats.
 const SERVER_RENDER_CHECK_DELAYS_MS = [800, 2_000, 4_000];
 
+const NOTICE_CHECK_DELAY_MS = 500;
+const RECENT_OPERATIONS = 15;
+
 const POST_OPERATIONS = ["TweetDetail", "TweetResultByRestId"];
 const PROFILE_OPERATIONS = ["UserByScreenName"];
 
@@ -72,11 +75,36 @@ const deps: RewriteDeps = {
 
 const rewriter = new ResponseRewriter(deps);
 const seenOperations = new Set<string>();
+const recentOperations: string[] = [];
+let watchingForNotice = false;
+
+/**
+ * If something still brings the withheld page back after a recovery, this names what X
+ * asked for just before it, which is the evidence needed to fix it from a remote report.
+ */
+function watchForReturningNotice(): void {
+  if (watchingForNotice) return;
+  watchingForNotice = true;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  const observer = new MutationObserver(() => {
+    if (timer !== null) return;
+    timer = setTimeout(() => {
+      timer = null;
+      if (document.querySelector('main a[href*="withheld"]') === null) return;
+      observer.disconnect();
+      log(`notice came back after: ${recentOperations.join(" ")}`);
+    }, NOTICE_CHECK_DELAY_MS);
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+}
 
 const bodyRewriter: BodyRewriter = {
   takesOverErrors: (ctx) => rewriter.takesOverErrors(ctx),
+  watchesRestUsers: () => rewriter.watchesRestUsers(),
   async rewrite(text, ctx) {
     seenOperations.add(ctx.operation);
+    recentOperations.push(ctx.operation);
+    recentOperations.splice(0, Math.max(0, recentOperations.length - RECENT_OPERATIONS));
     const { text: next, applied, failed, profiles, diagnostic } = await rewriter.rewrite(text, ctx);
     if (applied.length > 0 || failed.length > 0 || profiles.length > 0) {
       window.postMessage(
@@ -84,7 +112,8 @@ const bodyRewriter: BodyRewriter = {
         location.origin,
       );
     }
-    if (diagnostic) log(diagnostic, applied.length > 0 || failed.length > 0 || profiles.length > 0 || /blocked=[1-9]/.test(diagnostic));
+    if (profiles.length > 0) watchForReturningNotice();
+    if (diagnostic) log(diagnostic, applied.length > 0 || failed.length > 0 || profiles.length > 0 || /blocked=[1-9]|copies=[1-9]/.test(diagnostic));
     return next;
   },
 };

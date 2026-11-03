@@ -20,6 +20,19 @@ const WITHHELD_IN = /withheld in ([A-Z]{2})\b/;
  */
 const REPLACED_FIELDS = ["avatar", "banner", "core", "legacy", "location", "profile_bio", "website"];
 
+const REST_VIEWER_FIELDS = [
+  "blocked_by",
+  "blocking",
+  "can_dm",
+  "can_media_tag",
+  "follow_request_sent",
+  "followed_by",
+  "following",
+  "muting",
+  "notifications",
+  "want_retweets",
+];
+
 const isObject = (value: unknown): value is Json =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
@@ -104,28 +117,56 @@ function fillUser(user: Json, author: PostAuthor): void {
   Object.assign(user, { ...built, ...user });
 }
 
+/** Any trace of the hold, in the field names of the GraphQL and REST APIs alike. */
+function hasWithheldFlag(node: Json): boolean {
+  return [node, asObject(node.profile_bio), asObject(node.legacy)].some((source) => {
+    const countries = source.withheld_in_countries;
+    return (
+      (Array.isArray(countries) && countries.length > 0) ||
+      source.with_held_scope === "user" ||
+      source.withheld_scope === "user" ||
+      (typeof source.withheld_description === "string" && source.withheld_description !== "")
+    );
+  });
+}
+
+/** A REST user is flat, and its viewer-specific fields are real, so they stay. */
+function fillRestUser(node: Json, author: PostAuthor): void {
+  const kept = Object.fromEntries(REST_VIEWER_FIELDS.filter((field) => field in node).map((field) => [field, node[field]]));
+  delete node.withheld_description;
+  delete node.withheld_entities;
+  Object.assign(node, asObject(buildUser(author).legacy), kept);
+}
+
 /**
- * X's classic client keeps one record per user, so a blocked account's copy nested in any
- * later response would flip the recovered profile back to the withheld page.
+ * X's classic client keeps one record per user and overwrites it from every response,
+ * over GraphQL and REST alike. Any copy of a recovered account that still carries the
+ * hold would flip its profile back to the withheld page, so every copy gets filled.
+ * Returns how many were found.
  */
-export function fillKnownUsers(payload: unknown, authors: ReadonlyMap<string, PostAuthor>): boolean {
-  let changed = false;
+export function fillKnownUsers(payload: unknown, authors: ReadonlyMap<string, PostAuthor>): number {
+  let filled = 0;
   const stack: unknown[] = [payload];
   while (stack.length > 0) {
     const node = stack.pop();
     if (Array.isArray(node)) {
       stack.push(...node);
     } else if (isObject(node)) {
-      const author = node.__typename === "User" && typeof node.rest_id === "string" ? authors.get(node.rest_id) : undefined;
-      if (author && isBlockedForViewer(node)) {
-        fillUser(node, author);
-        changed = true;
+      const isGraphqlUser = node.__typename === "User" || isObject(node.profile_bio);
+      const graphqlAuthor = isGraphqlUser && typeof node.rest_id === "string" ? authors.get(node.rest_id) : undefined;
+      const restAuthor = typeof node.id_str === "string" && typeof node.screen_name === "string" ? authors.get(node.id_str) : undefined;
+      if (graphqlAuthor && (hasWithheldFlag(node) || asObject(node.core).name === "")) {
+        fillUser(node, graphqlAuthor);
+        filled += 1;
+      } else if (restAuthor && (hasWithheldFlag(node) || node.name === "")) {
+        fillRestUser(node, restAuthor);
+        filled += 1;
       } else {
         stack.push(...Object.values(node));
       }
     }
   }
-  return changed;
+  return filled;
 }
 
 /**

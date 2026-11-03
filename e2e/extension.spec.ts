@@ -23,6 +23,7 @@ const DETAIL = fixture("x-tweetdetail-withheld.json").replaceAll("19000000000000
 const asLiveUser = (json: string) => json.replaceAll("1800000000000000003", USER_ID).replaceAll("BlockedSample", USER_HANDLE);
 const BLOCKED_USER = asLiveUser(fixture("x-user-withheld-relay.json"));
 const SIGNED_IN_USER = asLiveUser(fixture("x-user-withheld-logged-in.json"));
+const FOLLOWING_LIST = JSON.stringify({ users: [{ id_str: USER_ID, screen_name: USER_HANDLE, name: "", following: true, withheld_scope: "user", withheld_in_countries: ["TR"] }] });
 const UNRECOVERABLE_DETAIL = DETAIL.replaceAll(WITHHELD_ID, UNKNOWN_ID);
 
 const HARNESS = `<!doctype html><html><head><title>harness</title></head><body><main id="root"></main><script>
@@ -85,6 +86,7 @@ const test = base.extend<Fixtures>({
         if (path === "/ClientRenderedProfile") return route.fulfill({ contentType: "text/html", body: withheldPage("/i/api/graphql/abc/UserByScreenName") });
         if (url.includes("/graphql/") && url.includes("/UserOriginalsTimeline")) return route.fulfill({ status: 404, body: "" });
         if (url.includes("/graphql/signed-in/UserByScreenName")) return route.fulfill({ contentType: "application/json", body: SIGNED_IN_USER });
+        if (url.includes("/1.1/friends/following/list.json")) return route.fulfill({ contentType: "application/json", body: FOLLOWING_LIST });
         if (url.includes("/graphql/") && url.includes("/UnrecoverableDetail")) return route.fulfill({ contentType: "application/json", body: UNRECOVERABLE_DETAIL });
         if (url.includes("/graphql/") && url.includes("/TweetDetail")) return route.fulfill({ contentType: "application/json", body: DETAIL });
         if (url.includes("/graphql/") && url.includes("/UserByScreenName")) return route.fulfill({ contentType: "application/json", body: BLOCKED_USER });
@@ -256,6 +258,21 @@ test("classic client: the default Posts tab of a blocked account uses the classi
   const posts = entries.filter((entry) => entry.entryId.startsWith("tweet-"));
   expect(posts.length).toBeGreaterThan(0);
   expect(posts.every((entry) => entry.content.itemContent?.socialContext === undefined)).toBe(true);
+});
+
+test("a later REST list cannot flip a recovered profile back", async ({ page }) => {
+  const url = "/i/api/1.1/friends/following/list.json";
+  const viaXhr = (target: string) => page.evaluate((u) => (window as never as { viaXhr(a: string, s: string): Promise<{ users: Array<Record<string, unknown>> }> }).viaXhr(u, "readystate-after-open"), target);
+
+  // Nothing is recovered yet, so X's own answer passes through untouched.
+  expect((await viaXhr(url)).users[0]?.withheld_scope).toBe("user");
+
+  await page.evaluate(() => (window as never as { viaXhr(u: string, s: string): Promise<unknown> }).viaXhr("/i/api/graphql/signed-in/UserByScreenName", "onload"));
+  const user = (await viaXhr(url)).users[0];
+  expect(user?.withheld_scope).toBe("");
+  expect(user?.withheld_in_countries).toEqual([]);
+  expect(user?.name).toBeTruthy();
+  expect(user?.following).toBe(true);
 });
 
 test("the glow can be switched off and back on without a reload, and the eye stays", async ({ page, worker }) => {

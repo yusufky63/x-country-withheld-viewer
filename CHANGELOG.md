@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.6
+
+- Keep a recovered profile recovered. X overwrites its user record from every response, so copies of the account in later GraphQL and REST responses are now filled too, and repeat lookups no longer depend on the sources.
+- Name the requests in the console if the withheld page ever comes back.
+
 ## 0.1.5
 
 - Show the extension in Turkish by default, with English available from the popup. The language applies at once.

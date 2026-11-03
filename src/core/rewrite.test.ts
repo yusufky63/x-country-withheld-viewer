@@ -211,6 +211,35 @@ describe("ResponseRewriter profiles", () => {
     expect(timeline.data.user.result.timeline.timeline.instructions[0].entries[0].entryId).toMatch(/^tweet-/);
   });
 
+  it("answers repeat lookups from memory, so a failing source cannot flip the profile back", async () => {
+    const recoverProfile = vi
+      .fn<RewriteDeps["recoverProfile"]>()
+      .mockResolvedValueOnce({ status: "found", author: author ?? undefined, source: "fxtwitter" })
+      .mockResolvedValue({ status: "provider_unavailable" });
+    const memory = new ResponseRewriter(makeDeps({ recoverProfile }));
+    const ctx = { operation: "UserByScreenName", variables: { screen_name: "BlockedSample" } };
+    await memory.rewrite(JSON.stringify(loggedInUser), ctx);
+    const again = await memory.rewrite(JSON.stringify(loggedInUser), ctx);
+    expect(recoverProfile).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(again.text).data.user.result.core.name).toBe("Sample");
+    expect(again.profiles).toHaveLength(1);
+  });
+
+  it("fills a REST list that repeats the account, and reports it", async () => {
+    await rewriter.rewrite(JSON.stringify(loggedInUser), { operation: "UserByScreenName", variables: { screen_name: "BlockedSample" } });
+    expect(rewriter.watchesRestUsers()).toBe(true);
+    const body = { users: [{ id_str: USER_ID, screen_name: "BlockedSample", name: "", following: true, withheld_scope: "user", withheld_in_countries: ["TR"] }] };
+    const outcome = await rewriter.rewrite(JSON.stringify(body), { operation: "rest:friends/following/list", variables: {}, transport: "xhr", status: 200 });
+    const user = JSON.parse(outcome.text).users[0];
+    expect(user).toMatchObject({ name: "Sample", following: true, withheld_scope: "" });
+    expect(outcome.diagnostic).toContain("rest:friends/following/list");
+    expect(outcome.diagnostic).toContain("copies=1");
+  });
+
+  it("does not read REST bodies before any account is recovered", () => {
+    expect(rewriter.watchesRestUsers()).toBe(false);
+  });
+
   it("keeps a recovered profile from flipping back when another response repeats the blocked copy", async () => {
     await rewriter.rewrite(JSON.stringify(loggedInUser), { operation: "UserByScreenName", variables: { screen_name: "BlockedSample" } });
     const nested = { data: { spotlights: { user_results: { result: loggedInUser.data.user.result } } } };

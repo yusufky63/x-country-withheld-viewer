@@ -156,7 +156,7 @@ Kurtarılan gönderi iki şemayı da dolduran tek bir nesnedir, her istemci yaln
 - Relay istemcisinde yalnızca gönderi sekmesi dolar. Diğer sekmelerin yanıt yolu henüz bilinmiyor.
 - Medya sekmeleri düz gönderi listesi olarak dolar. X'in ızgara görünümünü koruyup korumadığı denenmedi.
 - Oturumsuz doğrudan açılan gizli sayfa X'in sunucusunda çizilir. Eklenti sekmeyi bir kez `/explore` üzerinden geçirip geri getirir, bu yüzden biraz daha uzun sürer.
-- X'in yanıtı kaynakları en fazla 4 saniye bekler. Daha geç gelen sonuç için o an X'in uyarısı görünür, sonuç önbelleğe alınır ve sonraki açılışta kullanılır.
+- X'in yanıtı kaynakları en fazla 4 saniye bekler. Daha geç gelen sonuç için o an X'in uyarısı görünür, sonuç önbelleğe alınır ve sonraki açılışta kullanılır. Bir kez dolan hesap sayfa yenilenene kadar bellekte kalır, X aynı hesabı sonraki yanıtlarda yeniden gönderse de uyarıya dönmez.
 - Aynı hesap için kaynaklar bazen 200, bazen 404 dönebilir. Profil sorguları bu yüzden sayısal kimlikle yapılır. `x.md` verisini FxTwitter'dan alabildiği için tam bağımsız bir yedek değildir.
 
 ## Kaynak sınırları

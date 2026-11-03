@@ -15,7 +15,7 @@ import {
   timelineViewOf,
   userTimelinePayload,
 } from "./timeline";
-import type { AppliedMark, FailedMark, PostAuthor, PostRecord, PostsPage, ProfileMark, ProfileResult, RecoveryItem, RecoveryResult } from "./types";
+import type { AppliedMark, FailedMark, PostAuthor, PostRecord, PostsPage, ProfileMark, ProfileResult, ProviderId, RecoveryItem, RecoveryResult } from "./types";
 import { findConversationId, findHits, mightContainHits, type RequestContext, type TombstoneHit } from "./withheld-detector";
 
 type Json = Record<string, unknown>;
@@ -92,6 +92,14 @@ function describeShape(payload: unknown): string {
   return `data=[${slots.join(";")}]`;
 }
 
+interface RecoveredAccount {
+  id: string;
+  handle: string;
+  country?: string;
+  author: PostAuthor;
+  source: ProviderId;
+}
+
 /**
  * Fills the gaps in X's GraphQL bodies so X's own client renders recovered posts and
  * profiles. Any failure leaves the original text in place, so X keeps working as it
@@ -99,10 +107,10 @@ function describeShape(payload: unknown): string {
  */
 export class ResponseRewriter {
   readonly #deps: RewriteDeps;
-  // Blocked accounts seen on this page, so their timeline requests can be filled in.
+  // Recovered accounts on this page, so their timeline requests can be filled in.
   // The classic client asks by user ID, the Relay client by screen name.
-  readonly #blockedById = new Map<string, { id: string; handle: string; country?: string }>();
-  readonly #blockedByHandle = new Map<string, { id: string; handle: string; country?: string }>();
+  readonly #blockedById = new Map<string, RecoveredAccount>();
+  readonly #blockedByHandle = new Map<string, RecoveredAccount>();
   readonly #blockedAuthors = new Map<string, PostAuthor>();
 
   constructor(deps: RewriteDeps) {
@@ -114,6 +122,11 @@ export class ResponseRewriter {
     const { userId, screenName } = ctx.variables;
     if (typeof userId === "string") return this.#blockedById.get(userId);
     return typeof screenName === "string" ? this.#blockedByHandle.get(screenName.toLowerCase()) : undefined;
+  }
+
+  /** REST bodies are only worth reading once there is an account whose copies need filling. */
+  watchesRestUsers(): boolean {
+    return this.#blockedAuthors.size > 0;
   }
 
   /** X refuses cursors it did not issue and may error on a blocked account's timeline. */
@@ -130,7 +143,8 @@ export class ResponseRewriter {
     // User lookups are small and are where a blocked account shows up, so they are always
     // read. The substring checks spare every larger body a second parse.
     const isUserLookup = USER_LOOKUP.test(ctx.operation);
-    const mentionsKnownUser = this.#blockedAuthors.size > 0 && text.includes("with_held_scope");
+    const mentionsKnownUser =
+      this.#blockedAuthors.size > 0 && (text.includes("withheld") || text.includes("with_held") || text.includes('"name":""'));
     if (!timelineUser && !isUserLookup && !mentionsKnownUser && !mightContainHits(text) && !mightContainBlockedUser(text)) return unchanged;
 
     let payload: unknown;
@@ -145,15 +159,17 @@ export class ResponseRewriter {
     const marks = emptyMarks();
     const profiles = await this.#fillProfiles(payload, ctx, marks);
     let changed = profiles.changed;
-    changed = fillKnownUsers(payload, this.#blockedAuthors) || changed;
+    const copies = fillKnownUsers(payload, this.#blockedAuthors);
+    changed = copies > 0 || changed;
     changed = (await this.#fillTombstones(payload, ctx, marks)) || changed;
     changed = (await this.#fillConversation(payload, ctx, marks)) || changed;
 
+    const note = copies > 0 ? `${profiles.note} copies=${copies}` : profiles.note;
     if (timelineUser) {
       const filled = await this.#fillUserTimeline(payload, ctx, timelineUser, marks);
-      if (filled) return { text: JSON.stringify(filled), ...marks, diagnostic: this.#describe(text, shape, profiles.note, ctx, marks) };
+      if (filled) return { text: JSON.stringify(filled), ...marks, diagnostic: this.#describe(text, shape, note, ctx, marks) };
     }
-    return { text: changed ? JSON.stringify(payload) : text, ...marks, diagnostic: this.#describe(text, shape, profiles.note, ctx, marks) };
+    return { text: changed ? JSON.stringify(payload) : text, ...marks, diagnostic: this.#describe(text, shape, note, ctx, marks) };
   }
 
   #describe(text: string, shape: string, profileNote: string, ctx: RequestContext, marks: Marks): string {
@@ -179,11 +195,16 @@ export class ResponseRewriter {
     let changed = false;
     for (const user of blocked) {
       const { id, handle, country } = user;
-      const result = await this.#deps.recoverProfile({ id, handle });
+      // X asks for the same user more than once per page. Answering from memory keeps a later
+      // answer from failing and flipping the profile back if a source or the worker is slow.
+      const recovered = this.#blockedById.get(id);
+      const result: ProfileResult = recovered
+        ? { status: "found", author: recovered.author, source: recovered.source }
+        : await this.#deps.recoverProfile({ id, handle });
       statuses.push(result.status);
       if (result.status !== "found" || !result.author || !result.source) continue;
       user.fill(result.author);
-      const known = { id, handle, ...(country ? { country } : {}) };
+      const known: RecoveredAccount = { id, handle, author: result.author, source: result.source, ...(country ? { country } : {}) };
       this.#blockedById.set(id, known);
       this.#blockedByHandle.set(handle.toLowerCase(), known);
       this.#blockedAuthors.set(id, result.author);

@@ -107,7 +107,7 @@ describe("fillKnownUsers", () => {
 
   it("fills a blocked account's copy nested deep in another response", () => {
     const payload = { data: { timeline: [{ tweet_results: { result: { core: { user_results: { result: clone(loggedIn).data.user.result } } } } }] } };
-    expect(fillKnownUsers(payload, known)).toBe(true);
+    expect(fillKnownUsers(payload, known)).toBe(1);
     const user = payload.data.timeline[0]?.tweet_results.result.core.user_results.result as unknown as { core: { name: string }; profile_bio: { with_held_scope: string } };
     expect(user.core.name).toBe("Sample");
     expect(user.profile_bio.with_held_scope).toBe("");
@@ -116,9 +116,47 @@ describe("fillKnownUsers", () => {
   it("leaves other users and already visible copies alone", () => {
     const other = clone(loggedIn);
     other.data.user.result.rest_id = "9";
-    expect(fillKnownUsers(other, known)).toBe(false);
+    expect(fillKnownUsers(other, known)).toBe(0);
     expect(other.data.user.result.core.name).toBe("");
-    expect(fillKnownUsers(visibleUser({ rest_id: "1800000000000000003" }), known)).toBe(false);
+    expect(fillKnownUsers(visibleUser({ rest_id: "1800000000000000003" }), known)).toBe(0);
+  });
+
+  it("fills a copy that keeps its name but still carries the flag", () => {
+    const copy = { __typename: "User", rest_id: "1800000000000000003", core: { name: "Sample", screen_name: "BlockedSample" }, profile_bio: { with_held_scope: "user" } };
+    expect(fillKnownUsers({ data: { users: [{ result: copy }] } }, known)).toBe(1);
+    expect(copy.profile_bio.with_held_scope).toBe("");
+  });
+
+  it("fills a blanked copy that carries no flag", () => {
+    const copy = { __typename: "User", rest_id: "1800000000000000003", core: { name: "", screen_name: "BlockedSample" } };
+    expect(fillKnownUsers({ user_results: { result: copy } }, known)).toBe(1);
+    expect(copy.core.name).toBe("Sample");
+  });
+
+  it("fills a flat REST user and keeps its real viewer fields", () => {
+    const copy: Record<string, unknown> = {
+      id_str: "1800000000000000003",
+      screen_name: "BlockedSample",
+      name: "",
+      following: true,
+      withheld_scope: "user",
+      withheld_in_countries: ["TR"],
+      withheld_description: "has been withheld",
+    };
+    expect(fillKnownUsers({ users: [copy] }, known)).toBe(1);
+    expect(copy).toMatchObject({ name: "Sample", following: true, withheld_scope: "", withheld_in_countries: [] });
+    expect(copy.withheld_description).toBeUndefined();
+  });
+
+  it("does not treat a post with the same ID as a user", () => {
+    const post = { __typename: "Tweet", rest_id: "1800000000000000003", legacy: { withheld_in_countries: ["TR"] } };
+    expect(fillKnownUsers({ result: post }, known)).toBe(0);
+  });
+
+  it("does not touch a wrapper around a user", () => {
+    const wrapper = { id: "x", rest_id: "1800000000000000003", result: { __typename: "User", rest_id: "9" } };
+    expect(fillKnownUsers({ user_results: wrapper }, known)).toBe(0);
+    expect(wrapper.result.rest_id).toBe("9");
   });
 });
 
