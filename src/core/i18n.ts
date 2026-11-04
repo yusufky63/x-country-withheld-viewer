@@ -42,6 +42,12 @@ export const POPUP_TEXT = {
 
 export type PopupKey = keyof (typeof POPUP_TEXT)["tr"];
 
+/** What the userscript's menu adds to the popup's texts, since a menu entry has no switch to show. */
+export const MENU_TEXT = {
+  tr: { on: "Açık", off: "Kapalı", languageName: "Türkçe" },
+  en: { on: "On", off: "Off", languageName: "English" },
+} as const satisfies Record<Language, Record<string, string>>;
+
 export function copiedLines(count: number, language: Language): string {
   return language === "tr" ? `${count} satır kopyalandı` : `Copied ${count} lines`;
 }

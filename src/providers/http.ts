@@ -11,7 +11,7 @@ export interface JsonResponse {
 
 export type JsonFetcher = (url: string) => Promise<JsonResponse>;
 
-function parseRetryAfter(value: string | null): number | undefined {
+export function parseRetryAfter(value: string | null): number | undefined {
   if (!value) return undefined;
   const seconds = Number(value);
   if (Number.isFinite(seconds)) return Math.max(0, seconds * 1000);

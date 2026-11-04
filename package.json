@@ -1,9 +1,9 @@
 {
   "name": "x-country-withheld-viewer",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "type": "module",
-  "description": "Chrome and Edge extension that shows country-withheld public posts on X inline, rendered by X itself, with a small marker.",
+  "description": "Browser extension and userscript that show country-withheld public posts on X inline, rendered by X itself, with a small marker.",
   "license": "MIT",
   "packageManager": "pnpm@9.15.4",
   "engines": {
@@ -12,6 +12,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "node scripts/build.mjs --watch",
+    "serve:userscript": "node scripts/serve-userscript.mjs",
     "icons": "node scripts/make-icons.mjs",
     "probe": "node tools/probe.mjs",
     "typecheck": "tsc --noEmit",

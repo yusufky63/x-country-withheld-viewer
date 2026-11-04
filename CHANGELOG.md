@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.7
+
+- Add a userscript for Tampermonkey and Violentmonkey, built from the same code, with its settings in the manager's menu and automatic updates.
+- Let only one copy run when the extension and the userscript are both installed.
+
 ## 0.1.6
 
 - Keep a recovered profile recovered. X overwrites its user record from every response, so copies of the account in later GraphQL and REST responses are now filled too, and repeat lookups no longer depend on the sources.

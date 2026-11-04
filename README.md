@@ -40,6 +40,23 @@ Hiçbir kaynakta bulunamayan gönderide X'in kendi uyarısı kalır, altına ned
 
 Klasörü silme, tarayıcı eklentiyi her açılışta oradan yükler.
 
+### Kullanıcı betiği olarak
+
+Ayrı bir eklenti kurmak istemezsen aynı kod Tampermonkey ya da Violentmonkey ile de çalışır.
+
+1. Tarayıcına Tampermonkey ya da Violentmonkey kur. Chromium tabanlı tarayıcılarda Tampermonkey için eklentiler sayfasında **Geliştirici modu**nu ya da eklentinin ayrıntılarındaki **Kullanıcı betiklerine izin ver** ayarını aç.
+2. [Betiği kur](https://github.com/yusufky63/x-country-withheld-viewer/releases/latest/download/x-country-withheld-viewer.user.js) bağlantısını aç, yönetici kurulum ekranını gösterir.
+3. X sekmesini yenile.
+
+Yeni sürümler yönetici tarafından otomatik alınır. Eklentiyle farkları:
+
+- Ayarlar açılır pencere yerine yöneticinin menüsündedir. Sayaçlar menüde görünmez.
+- Kurtarılan içerik yalnızca sayfanın belleğinde tutulur, bu yüzden sayfa yenilenince kaynaklara yeniden sorulur.
+- Eklenti ve betik birlikte kuruluysa önce yüklenen çalışır, diğeri devreye girmez. Hangisinin çalıştığı konsolda yazar.
+- Tampermonkey betiği X'in kodu başladıktan sonra çalıştırabilir. X'in ilk isteği kaçarsa bu konsola yazılır, gizlenen profil ya da gönderi sayfası da bir kez `/explore` üzerinden geçip geri döner.
+
+Betik Firefox'u da hedefler, ama bu tarayıcıda henüz denenmedi. Neyin denendiği [Durum](#durum) bölümünde yazar.
+
 ### Kaynaktan
 
 Node 20 veya üstü ve pnpm gerekir.
@@ -145,6 +162,10 @@ Kurtarılan gönderi iki şemayı da dolduran tek bir nesnedir, her istemci yaln
 | Canlı kaynaklar | Service worker'dan FxTwitter çağrıları | Geçti |
 | Oturum açık varsayılan Gönderiler, Yanıtlar, Yeniden gönderiler ve Medya | X'in paketinden okunan şekle göre testler | **Gerçek sayfada henüz görülmedi** |
 | Oturum açık tek gönderi değişimi ve yanıt doldurma | Gerçek yanıtın şekline göre testler | **Gerçek sayfada henüz görülmedi** |
+| Kullanıcı betiği: yanıt yakalama, işaret, menü, eklentiyle birlikte kurulum | Gerçek Chromium, yönetici taklidi, taklit sayfa | Geçti |
+| Kullanıcı betiği: gerçek Tampermonkey ve X sayfası | Edge, Tampermonkey 5.5.1, oturum açık profil, kullanıcı bildirimi | Çalıştı |
+| Kullanıcı betiği: X'in isteğinden sonra başlayınca gönderi sayfası | Yönetici taklidi, taklit sayfa | Geçti, **gerçek sayfada henüz görülmedi** |
+| Kullanıcı betiği: Violentmonkey ve Firefox | Yok | **Henüz denenmedi** |
 | macOS ve Linux | İşletim sistemine bağlı kod yok | **Henüz çalıştırılmadı** |
 
 ## Bilinen sınırlar
@@ -213,9 +234,10 @@ Eklentiler sayfasında eklentiyi yeniden yükle, açılır pencerede sürümü k
 | Komut | Ne yapar |
 | --- | --- |
 | `pnpm dev` | Değişiklikleri izleyerek derler |
-| `pnpm build` | `dist` klasörünü üretir |
+| `pnpm build` | Eklenti için `dist`, kullanıcı betiği için `dist-userscript` klasörünü üretir |
+| `pnpm serve:userscript` | Derlenen betiği yerelde sunar, böylece yöneticiyle kurulup denenebilir |
 | `pnpm check` | Typecheck, lint, birim testleri ve derleme |
-| `pnpm test:e2e` | Eklentiyi gerçek Chromium'a yükler, canlı kaynakları çağırır |
+| `pnpm test:e2e` | Eklentiyi ve betiği gerçek Chromium'da çalıştırır, canlı kaynakları çağırır |
 | `pnpm icons` | Simgeleri yeniden üretir |
 | `node tools/probe.mjs <postId> [kökPostId] [kullanıcıAdı]` | Kaynakların bir gönderiyi döndürüp döndürmediğini gösterir |
 
