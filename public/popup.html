@@ -12,13 +12,30 @@
         <h1>Withheld Viewer <span id="version" class="mono muted"></span></h1>
         <p class="muted" data-i18n="tagline"></p>
       </div>
-      <label class="switch">
+      <label class="switch" data-after-consent>
         <input id="enabled" type="checkbox" />
         <span aria-hidden="true"></span>
       </label>
     </header>
 
-    <section>
+    <p id="consent-note" class="note" role="status" hidden></p>
+
+    <section id="consent">
+      <h2 class="label" data-i18n="consentTitle"></h2>
+      <p class="consent-intro" data-i18n="consentIntro"></p>
+      <ul class="consent-list">
+        <li data-i18n="consentReads"></li>
+        <li data-i18n="consentSends"></li>
+        <li data-i18n="consentKeeps"></li>
+        <li data-i18n="consentNever"></li>
+      </ul>
+      <div class="consent-actions">
+        <button id="accept" class="primary" type="button" data-i18n="consentAccept"></button>
+        <button id="decline" type="button" data-i18n="consentDecline"></button>
+      </div>
+    </section>
+
+    <section data-after-consent>
       <h2 class="label" data-i18n="sources"></h2>
       <div class="row item">
         <span>FxTwitter</span>
@@ -34,8 +51,8 @@
     </section>
 
     <section>
-      <h2 class="label" data-i18n="display"></h2>
-      <div class="row item">
+      <h2 class="label" data-i18n="display" data-after-consent></h2>
+      <div class="row item" data-after-consent>
         <label for="glow" data-i18n="glow"></label>
         <label class="switch">
           <input id="glow" type="checkbox" />
@@ -51,7 +68,7 @@
       </div>
     </section>
 
-    <section>
+    <section data-after-consent>
       <h2 class="label" data-i18n="session"></h2>
       <div class="row item">
         <span data-i18n="shown"></span>
@@ -63,9 +80,13 @@
       </div>
     </section>
 
-    <p class="muted disclosure" data-i18n="disclosure"></p>
+    <p class="muted disclosure" data-i18n="disclosure" data-after-consent></p>
 
-    <div class="actions">
+    <p class="policy">
+      <a href="https://github.com/yusufky63/x-country-withheld-viewer/blob/main/PRIVACY.md" target="_blank" rel="noreferrer noopener" data-i18n="policy"></a>
+    </p>
+
+    <div class="actions" data-after-consent>
       <button id="clear" type="button" data-i18n="clear"></button>
       <button id="copy" type="button" data-i18n="copy"></button>
     </div>

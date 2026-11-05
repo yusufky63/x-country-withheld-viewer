@@ -1,6 +1,6 @@
 {
   "name": "x-country-withheld-viewer",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": true,
   "type": "module",
   "description": "Browser extension and userscript that show country-withheld public posts on X inline, rendered by X itself, with a small marker.",
@@ -14,6 +14,8 @@
     "dev": "node scripts/build.mjs --watch",
     "serve:userscript": "node scripts/serve-userscript.mjs",
     "icons": "node scripts/make-icons.mjs",
+    "package": "node scripts/build.mjs && node scripts/package.mjs",
+    "store:assets": "node scripts/build.mjs && node scripts/store-assets.mjs",
     "probe": "node tools/probe.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings=0",

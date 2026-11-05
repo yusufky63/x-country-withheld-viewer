@@ -1,4 +1,5 @@
 import type { BackgroundRequest } from "../bridge/message-schema";
+import { type Consent, readConsent } from "../core/consent";
 import { copiedLines, type PopupKey, POPUP_TEXT } from "../core/i18n";
 import { readSettings } from "../core/settings";
 import type { Language, SessionStats, Settings } from "../core/types";
@@ -18,6 +19,9 @@ const shown = element("shown");
 const missed = element("missed");
 const clear = element<HTMLButtonElement>("clear");
 const copy = element<HTMLButtonElement>("copy");
+const accept = element<HTMLButtonElement>("accept");
+const decline = element<HTMLButtonElement>("decline");
+const consentNote = element("consent-note");
 
 let language: Language = "tr";
 
@@ -36,19 +40,36 @@ async function renderStats(): Promise<void> {
   missed.textContent = String(stats?.missed ?? 0);
 }
 
+function renderConsent(consent: Consent | undefined, note?: PopupKey): void {
+  document.body.dataset.consent = consent ?? "undecided";
+  consentNote.hidden = !note;
+  if (note) consentNote.dataset.i18n = note;
+  else delete consentNote.dataset.i18n;
+  renderTexts();
+}
+
 async function init(): Promise<void> {
   // Makes it obvious whether a rebuilt extension has actually been reloaded.
   element("version").textContent = chrome.runtime.getManifest().version;
-  const settings = await readSettings();
+  if (location.search === "?welcome") document.documentElement.classList.add("tab");
+  const [settings, consent] = await Promise.all([readSettings(), readConsent()]);
   enabled.checked = settings.enabled;
   xmd.checked = settings.useXmdFallback;
   glow.checked = settings.glowBorder;
   language = settings.language;
   languageTr.checked = language === "tr";
   languageEn.checked = language === "en";
-  renderTexts();
+  renderConsent(consent, consent === "declined" ? "consentDeclined" : undefined);
   await renderStats();
 }
+
+accept.addEventListener("click", () => {
+  void chrome.storage.local.set({ consent: "accepted" satisfies Consent }).then(() => renderConsent("accepted", "consentReady"));
+});
+
+decline.addEventListener("click", () => {
+  void chrome.storage.local.set({ consent: "declined" satisfies Consent }).then(() => renderConsent("declined", "consentDeclined"));
+});
 
 enabled.addEventListener("change", () => {
   void chrome.storage.local.set({ enabled: enabled.checked } satisfies Partial<Settings>);

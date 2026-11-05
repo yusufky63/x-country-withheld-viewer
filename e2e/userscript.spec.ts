@@ -284,6 +284,8 @@ test.describe("beside the extension", () => {
   test.use({ withExtension: true });
 
   test("only one of them runs, and the post is still recovered", async ({ context }) => {
+    const worker = context.serviceWorkers()[0] ?? (await context.waitForEvent("serviceworker"));
+    await worker.evaluate(() => chrome.storage.local.set({ consent: "accepted" }));
     const page = await context.newPage();
     const lines: string[] = [];
     page.on("console", (message) => lines.push(message.text()));

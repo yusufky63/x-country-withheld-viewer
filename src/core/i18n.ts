@@ -20,6 +20,18 @@ export const POPUP_TEXT = {
       "Gizlenen gönderilerin kimlikleri yukarıdaki kaynaklara gider, bu kaynaklar IP adresini de görür. X çerezleri ve token'ları tarayıcından çıkmaz. Kaynak değişiklikleri bundan sonra yüklenen gönderilere uygulanır.",
     clear: "Kurtarılan gönderileri temizle",
     copy: "Tanı bilgisini kopyala",
+    consentTitle: "Açmadan önce onayın gerekiyor",
+    consentIntro: "Onay verene kadar hiçbir şey göndermez.",
+    consentReads: "X'in sayfaya gönderdiği yanıtları tarayıcının içinde okur, gizlenen gönderi ve hesapları bulur.",
+    consentSends:
+      "Gizlenenlerin gönderi kimliğini, hesap kimliğini ve kullanıcı adını FxTwitter (api.fxtwitter.com) ve x.md (mdfromx.com) servislerine gönderir. Bu servisler IP adresini ve neyin istendiğini de görür.",
+    consentKeeps: "Kurtarılan içerik ve tanı bilgisi bellekte durur, tarayıcı kapanınca silinir.",
+    consentNever: "X çerezlerin, oturum bilgilerin ve mesajların gönderilmez. Geliştiriciye hiçbir veri gelmez.",
+    consentAccept: "Kabul ediyorum, aç",
+    consentDecline: "Kabul etmiyorum",
+    consentDeclined: "Eklenti kapalı kalıyor. Fikrini değiştirirsen buradan açabilirsin.",
+    consentReady: "Eklenti açık. Başlaması için açık X sekmelerini yenile.",
+    policy: "Gizlilik politikası",
   },
   en: {
     tagline: "Shows country-withheld posts on X like any other post.",
@@ -37,6 +49,18 @@ export const POPUP_TEXT = {
       "The IDs of withheld posts go to the sources above, which also see your IP address. X cookies and tokens never leave your browser. Source changes apply to posts loaded after this.",
     clear: "Clear recovered posts",
     copy: "Copy diagnostics",
+    consentTitle: "Your OK is needed before it starts",
+    consentIntro: "Until you agree, it sends nothing.",
+    consentReads: "It reads the responses X sends to the page, inside your browser, to find withheld posts and accounts.",
+    consentSends:
+      "It sends the post ID, account ID and username of what was withheld to FxTwitter (api.fxtwitter.com) and x.md (mdfromx.com). These services also see your IP address and what was asked for.",
+    consentKeeps: "Recovered content and diagnostics stay in memory and are gone when the browser closes.",
+    consentNever: "Your X cookies, login details and messages are not sent. Nothing reaches the developer.",
+    consentAccept: "I agree, turn it on",
+    consentDecline: "I do not agree",
+    consentDeclined: "It stays off. You can turn it on here if you change your mind.",
+    consentReady: "It is on. Reload any open X tabs for it to start.",
+    policy: "Privacy policy",
   },
 } as const satisfies Record<Language, Record<string, string>>;
 

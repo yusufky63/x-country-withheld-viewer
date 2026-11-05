@@ -25,13 +25,14 @@ function inEye(x, y) {
   return inLens && !(distance > 0.2 && distance <= 0.34);
 }
 
-function pixel(column, row, size) {
+function pixel(column, row, size, margin) {
+  const art = size - margin * 2;
   let covered = 0;
   let glyph = 0;
   for (let sy = 0; sy < SAMPLES; sy += 1) {
     for (let sx = 0; sx < SAMPLES; sx += 1) {
-      const x = ((column + (sx + 0.5) / SAMPLES) / size) * 2 - 1;
-      const y = ((row + (sy + 0.5) / SAMPLES) / size) * 2 - 1;
+      const x = ((column - margin + (sx + 0.5) / SAMPLES) / art) * 2 - 1;
+      const y = ((row - margin + (sy + 0.5) / SAMPLES) / art) * 2 - 1;
       if (!inRoundedSquare(x, y)) continue;
       covered += 1;
       if (inEye(x, y)) glyph += 1;
@@ -51,13 +52,13 @@ function chunk(type, data) {
   return Buffer.concat([length, name, data, checksum]);
 }
 
-function png(size) {
+function png(size, margin) {
   const raw = Buffer.alloc((size * 4 + 1) * size);
   let cursor = 0;
   for (let y = 0; y < size; y += 1) {
     raw[cursor++] = 0;
     for (let x = 0; x < size; x += 1) {
-      for (const value of pixel(x, y, size)) {
+      for (const value of pixel(x, y, size, margin)) {
         raw[cursor++] = value;
       }
     }
@@ -76,6 +77,7 @@ function png(size) {
 }
 
 mkdirSync(out, { recursive: true });
-for (const size of [16, 32, 48, 128]) {
-  writeFileSync(join(out, `icon-${size}.png`), png(size));
+// The store wants 96px of art on the 128px icon. The toolbar sizes fill their whole square.
+for (const [size, margin] of [[16, 0], [32, 0], [48, 0], [128, 16]]) {
+  writeFileSync(join(out, `icon-${size}.png`), png(size, margin));
 }

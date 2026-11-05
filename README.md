@@ -36,7 +36,8 @@ Hiçbir kaynakta bulunamayan gönderide X'in kendi uyarısı kalır, altına ned
 1. [Son sürümden](https://github.com/yusufky63/x-country-withheld-viewer/releases/latest) ZIP dosyasını indirip bir klasöre çıkar.
 2. `chrome://extensions` ya da `edge://extensions` sayfasını aç ve **Geliştirici modu**nu etkinleştir.
 3. **Paketlenmemiş öğe yükle** ile çıkardığın klasörü seç.
-4. X sekmesini yenile.
+4. Açılan sekmede eklentinin ne yaptığını oku ve onay ver. Onay verene kadar eklenti kapalı kalır.
+5. X sekmesini yenile.
 
 Klasörü silme, tarayıcı eklentiyi her açılışta oradan yükler.
 
@@ -51,6 +52,7 @@ Ayrı bir eklenti kurmak istemezsen aynı kod Tampermonkey ya da Violentmonkey i
 Yeni sürümler yönetici tarafından otomatik alınır. Eklentiyle farkları:
 
 - Ayarlar açılır pencere yerine yöneticinin menüsündedir. Sayaçlar menüde görünmez.
+- Onay sorusu yoktur, betik kurulunca çalışır. Neyin nereye gittiği [gizlilik politikasında](PRIVACY.md) yazar.
 - Kurtarılan içerik yalnızca sayfanın belleğinde tutulur, bu yüzden sayfa yenilenince kaynaklara yeniden sorulur.
 - Eklenti ve betik birlikte kuruluysa önce yüklenen çalışır, diğeri devreye girmez. Hangisinin çalıştığı konsolda yazar.
 - Tampermonkey betiği X'in kodu başladıktan sonra çalıştırabilir. X'in ilk isteği kaçarsa bu konsola yazılır, gizlenen profil ya da gönderi sayfası da bir kez `/explore` üzerinden geçip geri döner.
@@ -74,7 +76,7 @@ Eklenti tarayıcının içinde çalıştığı için işletim sistemine bağlı 
 
 ## Ayarlar
 
-Araç çubuğundaki simgeye tıklayınca açılır. Değişiklikler kaydedilir.
+Araç çubuğundaki simgeye tıklayınca açılır. Değişiklikler kaydedilir. Henüz onay vermediysen burada önce onay sorusu görünür.
 
 <table>
 <tr>
@@ -88,7 +90,7 @@ Araç çubuğundaki simgeye tıklayınca açılır. Değişiklikler kaydedilir.
 
 | Ayar | Ne yapar |
 | --- | --- |
-| Ana anahtar | Kapalıyken hiçbir kaynağa istek gitmez, X olduğu gibi kalır. |
+| Ana anahtar | Kapalıyken hiçbir kaynağa istek gitmez, tanı bilgisi tutulmaz, X olduğu gibi kalır. |
 | x.md yedeği | FxTwitter sonuç vermezse `x.md` de sorulur. |
 | Parlayan kenarlık | Kenar parlamasını açar, kapatır. Göz işareti kalır. Hemen uygulanır. |
 | Dil | Türkçe ya da English. Varsayılan Türkçedir, tarayıcının diline bakılmaz. Hemen uygulanır. |
@@ -139,6 +141,9 @@ Kurtarılan gönderi iki şemayı da dolduran tek bir nesnedir, her istemci yaln
 
 ## Gizlilik ve güvenlik
 
+Ayrıntılar [gizlilik politikasındadır](PRIVACY.md).
+
+- **Onay:** Eklenti ilk açılışta ne yaptığını anlatır ve onayını ister. Onay verene kadar kaynaklara istek gitmez, hiçbir şey saklanmaz. Yanıtını açılır pencereden değiştirebilirsin.
 - **Dışarı çıkan:** Yalnızca gönderi kimlikleri, kullanıcı kimlikleri ve herkese açık kullanıcı adları. X çerezleri, token'ları ve istek başlıkları okunmaz, saklanmaz, gönderilmez.
 - **Kaynakların gördüğü:** İstekler çerezsiz ve yönlendirme bilgisi olmadan gider, ama kaynaklar IP adresini görür.
 - **İzinler:** Yalnızca `storage` ve iki kaynak adresi. `cookies`, `webRequest`, `debugger` ya da `proxy` istenmez.
@@ -160,6 +165,8 @@ Kurtarılan gönderi iki şemayı da dolduran tek bir nesnedir, her istemci yaln
 | `fetch` ve tüm XHR kullanım biçimleri | Eklentinin yüklü olduğu gerçek Chromium, taklit sayfa | Geçti |
 | XHR dinleyen iki başka eklentiyle birlikte | Gerçek Chromium, onların kancaları yüklü, taklit sayfa | Geçti |
 | Canlı kaynaklar | Service worker'dan FxTwitter çağrıları | Geçti |
+| Onay adımı: kurulumda açılan sekme, kabul, ret ve onay yokken kapalı kalma | Gerçek Chromium, taklit sayfa | Geçti |
+| Chrome Web Store incelemesi | Yok | **Henüz başvurulmadı** |
 | Oturum açık varsayılan Gönderiler, Yanıtlar, Yeniden gönderiler ve Medya | X'in paketinden okunan şekle göre testler | **Gerçek sayfada henüz görülmedi** |
 | Oturum açık tek gönderi değişimi ve yanıt doldurma | Gerçek yanıtın şekline göre testler | **Gerçek sayfada henüz görülmedi** |
 | Kullanıcı betiği: yanıt yakalama, işaret, menü, eklentiyle birlikte kurulum | Gerçek Chromium, yönetici taklidi, taklit sayfa | Geçti |
@@ -227,7 +234,7 @@ Evet. Açılır pencerede **Dil** bölümünden English'i seç. Açılır pencer
 Evet, açılır penceredeki ana anahtardan. Kapalıyken hiçbir kaynağa istek gitmez.
 
 **Gizlenen gönderi ya da profil hâlâ açılmıyor, ne yapmalıyım?**
-Eklentiler sayfasında eklentiyi yeniden yükle, açılır pencerede sürümü kontrol et ve X sekmesini yenile. Konsolda aynı sürümle `[X Withheld Viewer] ... active` satırı görünmeli. Bu satır yoksa eklenti sayfada çalışmıyor demektir. Varsa açılır pencereden **Tanı bilgisini kopyala** ile bilgiyi kopyalayıp sorun bildirirken ekle. Bu bilgide gönderi metni, çerez ya da istek başlığı yoktur.
+Açılır pencere onay soruyorsa önce onu yanıtla. Sonra eklentiler sayfasında eklentiyi yeniden yükle, açılır pencerede sürümü kontrol et ve X sekmesini yenile. Konsolda aynı sürümle `[X Withheld Viewer] ... active` satırı görünmeli. Bu satır yoksa eklenti sayfada çalışmıyor demektir. Varsa açılır pencereden **Tanı bilgisini kopyala** ile bilgiyi kopyalayıp sorun bildirirken ekle. Bu bilgide gönderi metni, çerez ya da istek başlığı yoktur.
 
 ## Geliştirme
 
@@ -239,6 +246,8 @@ Eklentiler sayfasında eklentiyi yeniden yükle, açılır pencerede sürümü k
 | `pnpm check` | Typecheck, lint, birim testleri ve derleme |
 | `pnpm test:e2e` | Eklentiyi ve betiği gerçek Chromium'da çalıştırır, canlı kaynakları çağırır |
 | `pnpm icons` | Simgeleri yeniden üretir |
+| `pnpm package` | Derler ve yüklenecek ZIP dosyasını repo köküne yazar |
+| `pnpm store:assets` | Derler, mağaza görsellerini ve README'deki açılır pencere görsellerini yeniden üretir |
 | `node tools/probe.mjs <postId> [kökPostId] [kullanıcıAdı]` | Kaynakların bir gönderiyi döndürüp döndürmediğini gösterir |
 
 Tarayıcı testleri için `pnpm exec playwright install chromium` çalıştır ya da kurulu bir Chromium için `CHROMIUM_PATH` ortam değişkenini ayarla.

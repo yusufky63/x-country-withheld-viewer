@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.8
+
+- Ask for agreement before the extension does anything, in a tab on install and in the popup, as the Chrome Web Store requires. Until then no source is asked and nothing is kept. The userscript is unchanged.
+- Keep no diagnostics while switched off, since they name page paths.
+- Add a privacy policy and link it from the popup.
+- Give the 128px icon the margin the store asks for.
+- Add `pnpm package` and `pnpm store:assets`, and the store listing texts under `store/`.
+
 ## 0.1.7
 
 - Add a userscript for Tampermonkey and Violentmonkey, built from the same code, with its settings in the manager's menu and automatic updates.

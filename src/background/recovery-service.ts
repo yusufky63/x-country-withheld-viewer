@@ -27,7 +27,8 @@ export function createRecoveryService({ fetchJson, store, getSettings }: Recover
       case "is-enabled":
         return getSettings().then(({ enabled }) => ({ enabled }));
       case "log":
-        return diagnostics.append(request.line);
+        // These lines name page paths, so they are kept only while the extension is on.
+        return getSettings().then(({ enabled }) => (enabled ? diagnostics.append(request.line) : undefined));
       case "recover":
         return router.recover(request.items);
       case "recover-profile":

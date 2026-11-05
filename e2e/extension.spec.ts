@@ -17,6 +17,12 @@ interface Fixtures {
   page: Page;
 }
 
+/** Runs in the worker. Tests start from a user who agreed, apart from the ones about the question itself. */
+async function resetToAgreed(): Promise<void> {
+  await chrome.storage.local.clear();
+  await chrome.storage.local.set({ consent: "accepted" });
+}
+
 const test = base.extend<Fixtures>({
   // eslint-disable-next-line no-empty-pattern
   context: async ({}, use) => {
@@ -43,7 +49,7 @@ const test = base.extend<Fixtures>({
     await use(worker);
   },
   page: async ({ context, worker }, use) => {
-    await worker.evaluate(() => chrome.storage.local.clear());
+    await worker.evaluate(resetToAgreed);
     const page = await context.newPage();
     await page.goto("https://x.com/harness");
     await use(page);
@@ -235,7 +241,7 @@ test("a saved glow setting applies to posts recovered after a reload", async ({ 
 });
 
 test("the console shows the extension is running and what X sent", async ({ context, worker }) => {
-  await worker.evaluate(() => chrome.storage.local.clear());
+  await worker.evaluate(resetToAgreed);
   const page = await context.newPage();
   const lines: string[] = [];
   page.on("console", (message) => lines.push(message.text()));
@@ -309,7 +315,7 @@ test("the language can be switched to English without a reload", async ({ page, 
 
 test("popup: opens in Turkish and switches to English", async ({ context, worker }) => {
   const extensionId = new URL(worker.url()).host;
-  await worker.evaluate(() => chrome.storage.local.clear());
+  await worker.evaluate(resetToAgreed);
   const page = await context.newPage();
   await page.goto(`chrome-extension://${extensionId}/popup.html`);
   await expect(page.locator("body.ready")).toHaveCount(1);
@@ -329,6 +335,7 @@ test("popup: opens in Turkish and switches to English", async ({ context, worker
 
 test("popup: settings persist and it renders in both themes", async ({ context, worker }) => {
   const extensionId = new URL(worker.url()).host;
+  await worker.evaluate(resetToAgreed);
   const page = await context.newPage();
   await page.setViewportSize({ width: 320, height: 520 });
   for (const colorScheme of ["light", "dark"] as const) {
@@ -342,4 +349,76 @@ test("popup: settings persist and it renders in both themes", async ({ context, 
   await expect.poll(() => worker.evaluate(() => chrome.storage.local.get("enabled"))).toEqual({ enabled: false });
   await page.reload();
   await expect(page.locator("#enabled")).not.toBeChecked();
+});
+
+test.describe("consent", () => {
+  test("a new install asks in its own tab", async ({ context, worker }) => {
+    const url = `chrome-extension://${new URL(worker.url()).host}/popup.html?welcome`;
+    await expect.poll(() => context.pages().map((page) => page.url())).toContain(url);
+  });
+
+  test("before an answer X stays as it is, nothing is kept, and agreeing starts it", async ({ context, worker }) => {
+    const extensionId = new URL(worker.url()).host;
+    const page = await context.newPage();
+    await page.goto("https://x.com/harness");
+    const fetchDetail = () => page.evaluate((url) => fetch(url).then((response) => response.text()), TWEET_DETAIL_URL);
+    expect(await fetchDetail()).toBe(DETAIL);
+    expect(await worker.evaluate(() => chrome.storage.session.get(["diagnostics", "stats"]))).toEqual({});
+
+    const popup = await context.newPage();
+    await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+    await expect(popup.locator("#enabled")).toBeHidden();
+    await expect(popup.locator("#clear")).toBeHidden();
+    await expect(popup.locator("#language-en")).toBeAttached();
+    await popup.locator("#accept").click();
+    await expect(popup.locator("#consent-note")).toHaveText("Eklenti açık. Başlaması için açık X sekmelerini yenile.");
+    await expect(popup.locator("#consent")).toBeHidden();
+    await expect(popup.locator(".switch").first()).toBeVisible();
+
+    await page.reload();
+    expect(await fetchDetail()).toContain(WITHHELD_TEXT);
+  });
+
+  test("a no keeps it off, stays after a reload, and can be changed", async ({ context, worker }) => {
+    const extensionId = new URL(worker.url()).host;
+    const popup = await context.newPage();
+    await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+    // A person cannot press anything before this either, since the popup is invisible until then.
+    await expect(popup.locator("body.ready")).toHaveCount(1);
+    await popup.locator("#language-en").check({ force: true });
+    await popup.locator("#decline").click();
+    await expect(popup.locator("#consent-note")).toHaveText("It stays off. You can turn it on here if you change your mind.");
+    await popup.reload();
+    await expect(popup.locator("#accept")).toBeVisible();
+    await expect(popup.locator("#consent-note")).toBeVisible();
+
+    const page = await context.newPage();
+    await page.goto("https://x.com/harness");
+    expect(await page.evaluate((url) => fetch(url).then((response) => response.text()), TWEET_DETAIL_URL)).toBe(DETAIL);
+
+    await popup.locator("#accept").click();
+    await expect.poll(() => worker.evaluate(() => chrome.storage.local.get("consent"))).toEqual({ consent: "accepted" });
+  });
+
+  test("the question fits the popup in both themes", async ({ context, worker }) => {
+    const extensionId = new URL(worker.url()).host;
+    const page = await context.newPage();
+    await page.setViewportSize({ width: 320, height: 600 });
+    for (const colorScheme of ["light", "dark"] as const) {
+      await page.emulateMedia({ colorScheme });
+      await page.goto(`chrome-extension://${extensionId}/popup.html`);
+      await expect(page.locator("body.ready")).toHaveCount(1);
+      await page.screenshot({ path: `test-results/consent-${colorScheme}.png`, fullPage: true });
+    }
+    // A browser popup stops growing at 600px and scrolls after that, which would hide the answers.
+    expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(600);
+    await page.locator("#language-en").check({ force: true });
+    await expect(page.locator("#accept")).toHaveText("I agree, turn it on");
+    expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(600);
+    await page.screenshot({ path: "test-results/consent-en.png", fullPage: true });
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto(`chrome-extension://${extensionId}/popup.html?welcome`);
+    await expect(page.locator("html.tab")).toHaveCount(1);
+    await page.screenshot({ path: "test-results/consent-tab.png" });
+  });
 });
